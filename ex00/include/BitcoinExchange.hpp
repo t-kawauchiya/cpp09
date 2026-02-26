@@ -6,7 +6,7 @@
 /*   By: takawauc <takawauc@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 16:57:27 by takawauc          #+#    #+#             */
-/*   Updated: 2026/02/25 20:33:48 by takawauc         ###   ########.fr       */
+/*   Updated: 2026/02/26 19:13:49 by takawauc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,12 +28,18 @@ public:
 
   BitcoinExchange &operator=(const BitcoinExchange &other);
 
-  int init(std::string filepath);
+  std::list<std::pair<time_t, int> > getData() const;
+
   void addData(std::pair<time_t, int> data);
-  int getPrice(time_t date);
+  int getPrice(time_t date) const;
+  int init(std::string filepath);
 
 private:
   std::list<std::pair<time_t, int> > data_;
 };
+
+std::ostream &operator<<(std::ostream &os, const BitcoinExchange &be);
+
+int parseStringTime(std::string str, time_t &t);
 
 #endif
