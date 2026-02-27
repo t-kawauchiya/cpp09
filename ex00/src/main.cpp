@@ -6,7 +6,7 @@
 /*   By: takawauc <takawauc@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 16:56:41 by takawauc          #+#    #+#             */
-/*   Updated: 2026/02/26 19:25:01 by takawauc         ###   ########.fr       */
+/*   Updated: 2026/02/27 13:23:46 by takawauc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,11 @@
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
+#include <limits>
 #include <sstream>
 
-int parseInput(std::string filename, const BitcoinExchange &btc);
-int parseInputLine(std::string line, time_t &t, float &f);
+void parseInput(std::string filename, const BitcoinExchange &btc);
+void parseInputLine(std::string line, time_t &t, double &f);
 std::string parseTmToString(time_t t);
 
 int main(int argc, char **argv) {
@@ -29,58 +30,62 @@ int main(int argc, char **argv) {
     std::cerr << "Error: can not accept multiple files." << std::endl;
     return EXIT_FAILURE;
   }
-
-  BitcoinExchange btc;
-
-  if (btc.init(DATA_FILE_PATH))
-    return EXIT_FAILURE;
-  return parseInput(argv[1], btc);
+  try {
+    BitcoinExchange btc(DATA_FILE_PATH);
+    parseInput(argv[1], btc);
+  } catch (std::runtime_error e) {
+    std::cerr << "Error: " << e.what() << std::endl;
+  }
 }
 
-int parseInput(std::string filename, const BitcoinExchange &btc) {
+void parseInput(std::string filename, const BitcoinExchange &btc) {
   std::ifstream ifs(filename.c_str());
   if (!ifs)
-    std::cerr << "Error: could not open file." << std::endl;
+    throw std::runtime_error("could not open file.");
 
   std::string line;
-  std::pair<time_t, float> input;
+  std::pair<time_t, double> input;
 
   if (!std::getline(ifs, line))
-    return EXIT_FAILURE;
+    throw std::runtime_error("could not read file.");
 
   while (std::getline(ifs, line)) {
-    if (parseInputLine(line, input.first, input.second))
-      continue;
-    std::string date = parseTmToString(input.first);
-    if (date.empty())
-      continue;
-    std::cout << input.first << " => " << input.second << " = ";
-    std::cout << btc.getPrice(input.first) * input.second << "\n";
+    try {
+      // std::cout << "line: " << line << std::endl;
+      parseInputLine(line, input.first, input.second);
+      std::string date = parseTmToString(input.first);
+      std::cout << date << " => " << input.second << " = ";
+      std::cout << btc.getPrice(input.first) * input.second << "\n";
+    } catch (std::runtime_error e) {
+      std::cerr << "Error: " << e.what() << std::endl;
+    }
   }
-  return EXIT_SUCCESS;
 }
 
-int parseInputLine(std::string line, time_t &t, float &f) {
+void parseInputLine(std::string line, time_t &t, double &f) {
 
   std::istringstream iss(line);
   if (!iss)
-    return EXIT_FAILURE;
+    throw std::runtime_error("could not read file.1");
 
-  std::cout << line << std::endl;
   std::string csv_item;
   if (!std::getline(iss, csv_item, '|'))
-    return EXIT_FAILURE;
+    throw std::runtime_error("could not read file.2");
   if (parseStringTime(csv_item, t))
-    return EXIT_FAILURE;
+    throw std::runtime_error("bad input => " + csv_item);
 
   if (!std::getline(iss, csv_item, '|'))
-    return EXIT_FAILURE;
+    throw std::runtime_error("could not read file.3");
   std::stringstream ss(csv_item);
   ss >> f;
+  if (f < 0)
+    throw std::runtime_error("not a positive number.");
+
+  if (f > (double)std::numeric_limits<int>::max())
+    throw std::runtime_error("too large a number.");
 
   if (ss.fail())
-    return EXIT_FAILURE;
-  return EXIT_SUCCESS;
+    throw std::runtime_error("could not read file.4");
 }
 
 std::string parseTmToString(time_t t) {
@@ -103,8 +108,12 @@ int parseStringTime(std::string str, time_t &t) {
   tm.tm_year = y - 1900;
   tm.tm_mon = m - 1;
   tm.tm_mday = d;
+  std::tm orig = tm;
   t = std::mktime(&tm);
-  if (t < 0)
+  if (t == (time_t)-1)
+    return EXIT_FAILURE;
+  if (tm.tm_year != orig.tm_year || tm.tm_mon != orig.tm_mon ||
+      tm.tm_mday != orig.tm_mday)
     return EXIT_FAILURE;
   return EXIT_SUCCESS;
 }
