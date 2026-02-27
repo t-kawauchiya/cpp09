@@ -12,6 +12,8 @@ SRC_FILES = main.cpp BitcoinExchange.cpp
 SRC = $(addprefix $(SRC_DIR), $(SRC_FILES))
 OBJ = $(addprefix $(OBJ_DIR), $(SRC_FILES:.cpp=.o))
 
+INPUT_TXT = input.txt
+
 all: $(NAME)
 
 $(NAME): $(OBJ)
@@ -42,6 +44,6 @@ leak_check: debug
 	./$(NAME)
 
 test: debug
-	./$(NAME)
+	./$(NAME) $(INPUT_TXT)
 
 .PHONY: all debug clean fclean re val leak_check test
