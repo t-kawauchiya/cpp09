@@ -6,7 +6,7 @@
 /*   By: takawauc <takawauc@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 16:56:41 by takawauc          #+#    #+#             */
-/*   Updated: 2026/02/27 23:39:37 by takawauc         ###   ########.fr       */
+/*   Updated: 2026/02/28 21:27:45 by takawauc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,11 @@ int main(int argc, char** argv) {
     PmergeMe pmm(input);
     // std::cout << pmm;
     pmm.solve();
-    // std::cout << "\n=====result=====\n" << pmm.getResult() << std::endl;
+    std::cout << "\n=====result=====\n";
+    std::vector<int> res = pmm.getResult();
+    for (std::vector<int>::const_iterator it = res.begin(); it != res.end();
+         it++)
+      std::cout << *it << " ";
   } catch (std::runtime_error e) {
     std::cerr << "Error: " << e.what() << std::endl;
   }

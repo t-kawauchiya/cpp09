@@ -6,7 +6,7 @@
 /*   By: takawauc <takawauc@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 16:57:27 by takawauc          #+#    #+#             */
-/*   Updated: 2026/02/27 23:35:25 by takawauc         ###   ########.fr       */
+/*   Updated: 2026/02/28 20:52:21 by takawauc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,15 +20,21 @@
 class PmergeMe {
 public:
   typedef struct s_node {
+    s_node();
+    s_node(const s_node& other);
+    s_node(int i_val);
+    s_node(int lvl, int i_val, const s_node& a, const s_node& b);
+
+    ~s_node();
+
+    s_node& operator=(const s_node& other);
+
+    int getIval() const;
+
     int level;
     int i_val;
-    std::pair<s_node*, s_node*> p_val;
-
-    s_node();
-    s_node(int lvl, int i_val, s_node* a, s_node* b);
-    // ~s_node();
-    int getIval() const;
-    s_node& operator=(const s_node& other);
+    s_node* high;
+    s_node* low;
   } t_node;
 
   PmergeMe();
@@ -61,5 +67,7 @@ private:
 
 std::ostream& operator<<(std::ostream& os, const PmergeMe& be);
 std::ostream& operator<<(std::ostream& os, const PmergeMe::t_node& node);
+std::ostream& operator<<(std::ostream& os,
+                         const std::vector<PmergeMe::t_node>& v);
 
 #endif
