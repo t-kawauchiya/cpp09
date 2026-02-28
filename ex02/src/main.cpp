@@ -6,10 +6,11 @@
 /*   By: takawauc <takawauc@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 16:56:41 by takawauc          #+#    #+#             */
-/*   Updated: 2026/02/28 21:27:45 by takawauc         ###   ########.fr       */
+/*   Updated: 2026/02/28 23:27:35 by takawauc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "CountedInt.hpp"
 #include "PmergeMe.hpp"
 #include <cstdlib>
 #include <iostream>
@@ -23,15 +24,16 @@ int main(int argc, char** argv) {
     return EXIT_FAILURE;
   }
   try {
+    CountedInt().reset_cnt();
     std::vector<int> input = parseArgsToVector(argc, argv);
     PmergeMe pmm(input);
-    // std::cout << pmm;
     pmm.solve();
     std::cout << "\n=====result=====\n";
     std::vector<int> res = pmm.getResult();
     for (std::vector<int>::const_iterator it = res.begin(); it != res.end();
          it++)
       std::cout << *it << " ";
+    std::cout << "\ncomp count: " << CountedInt().get_cnt() << std::endl;
   } catch (std::runtime_error e) {
     std::cerr << "Error: " << e.what() << std::endl;
   }

@@ -6,11 +6,12 @@
 /*   By: takawauc <takawauc@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 19:51:51 by takawauc          #+#    #+#             */
-/*   Updated: 2026/02/28 22:59:41 by takawauc         ###   ########.fr       */
+/*   Updated: 2026/02/28 23:24:53 by takawauc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "PmergeMe.hpp"
+#include "CountedInt.hpp"
 #include <cctype>
 #include <iostream>
 #include <vector>
@@ -86,7 +87,8 @@ std::vector<PmergeMe::t_node> PmergeMe::fold(std::vector<PmergeMe::t_node> v) {
   std::cout << "\n=====fold=====\n";
   std::cout << "input: " << v << std::endl;
   for (int i = 0; i + 1 < n; i += 2) {
-    if (v[i].getIval() > v[i + 1].getIval())
+    // if (v[i].getIval() > v[i + 1].getIval())
+    if (CountedInt(v[i].getIval()) > CountedInt(v[i + 1].getIval()))
       ret.push_back(t_node(v[i].level + 1, 0, v[i], v[i + 1]));
     else
       ret.push_back(t_node(v[i].level + 1, 0, v[i + 1], v[i]));
@@ -130,7 +132,7 @@ int PmergeMe::getIndexToInsert(
   int right = end - begin + 1;
   while (right - left > 1) {
     int mid = left + (right - left) / 2;
-    if ((begin + mid)->getIval() > node.getIval())
+    if (CountedInt((begin + mid)->getIval()) > CountedInt(node.getIval()))
       right = mid;
     else
       left = mid;
