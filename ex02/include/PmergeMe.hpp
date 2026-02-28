@@ -6,7 +6,7 @@
 /*   By: takawauc <takawauc@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 16:57:27 by takawauc          #+#    #+#             */
-/*   Updated: 2026/02/28 20:52:21 by takawauc         ###   ########.fr       */
+/*   Updated: 2026/02/28 22:46:27 by takawauc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ public:
   PmergeMe& operator=(const PmergeMe& other);
 
 private:
-  void solve(std::vector<t_node>& v);
+  std::vector<t_node> solve(const std::vector<t_node>& v);
 
   static void swap(PmergeMe::t_node& a, PmergeMe::t_node& b);
   static std::vector<t_node> fold(const std::vector<t_node> v);

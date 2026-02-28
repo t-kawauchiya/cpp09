@@ -6,7 +6,7 @@
 /*   By: takawauc <takawauc@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 19:51:51 by takawauc          #+#    #+#             */
-/*   Updated: 2026/02/28 22:44:23 by takawauc         ###   ########.fr       */
+/*   Updated: 2026/02/28 22:53:59 by takawauc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ std::vector<int> PmergeMe::getResult() const {
 }
 
 void PmergeMe::solve() {
-  solve(this->data_);
+  this->data_ = solve(this->data_);
 }
 
 void PmergeMe::swap(PmergeMe::t_node& a, PmergeMe::t_node& b) {
@@ -65,15 +65,17 @@ void PmergeMe::swap(PmergeMe::t_node& a, PmergeMe::t_node& b) {
   b = c;
 }
 
-void PmergeMe::solve(std::vector<PmergeMe::t_node>& v) {
+std::vector<PmergeMe::t_node>
+PmergeMe::solve(const std::vector<PmergeMe::t_node>& v) {
+  std::vector<PmergeMe::t_node> ret(v);
   if (v.size() == 2) {
-    if (v[0].getIval() > v[1].getIval())
-      PmergeMe::swap(v[0], v[1]);
-    return;
+    if (ret[0].getIval() > ret[1].getIval())
+      PmergeMe::swap(ret[0], ret[1]);
+    return ret;
   }
   std::vector<PmergeMe::t_node> folded = fold(v);
-  solve(folded);
-  v = expand(folded);
+  std::vector<PmergeMe::t_node> solved = solve(folded);
+  return expand(solved);
 }
 
 std::vector<PmergeMe::t_node> PmergeMe::fold(std::vector<PmergeMe::t_node> v) {
@@ -184,9 +186,11 @@ PmergeMe::s_node& PmergeMe::s_node::operator=(const PmergeMe::s_node& other) {
     return *this;
   level = other.level;
   i_val = other.i_val;
-  if (other.high)
+  delete high;
+  delete low;
+  if (other.high) {
     high = new s_node(*other.high);
-  else
+  } else
     high = NULL;
   if (other.low)
     low = new s_node(*other.low);
