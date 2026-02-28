@@ -6,7 +6,7 @@
 /*   By: takawauc <takawauc@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 19:51:51 by takawauc          #+#    #+#             */
-/*   Updated: 2026/02/28 22:53:59 by takawauc         ###   ########.fr       */
+/*   Updated: 2026/02/28 22:59:41 by takawauc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,7 +117,6 @@ PmergeMe::expand(const std::vector<PmergeMe::t_node> v) {
   for (std::vector<PmergeMe::t_node>::const_iterator it = v.begin() + 1;
        it != v.end() && it->low; it++) {
     int index = PmergeMe::getIndexToInsert(ret.begin(), ret.end(), *it->low);
-    // std::cout << "index: " << index << ", val: " << *it->low << std::endl;
     ret.insert(ret.begin() + index, *it->low);
     std::cout << "push *it->low : " << ret << std::endl;
   }
@@ -209,12 +208,13 @@ std::ostream& operator<<(std::ostream& os,
 }
 
 std::ostream& operator<<(std::ostream& os, const PmergeMe::t_node& node) {
-  os << "l" << node.level << " ";
 
   if (node.level == 0)
-    os << node.i_val << " ";
+    os << node.i_val;
   else {
-    os << "{" << *node.high << "," << *node.low << "} ";
+    os << "l" << node.level;
+    os << "{ " << *node.high << ", " << *node.low << "}";
   }
+  os << " ";
   return os;
 }
