@@ -4,7 +4,7 @@ CXX = c++
 CXXFLAGS = -Wall -Wextra -Werror -std=c++98 -pedantic -Iinclude
 LDFLAGS =
 
-SANFLAGS = -g -fsanitize=address -fsanitize=leak -fno-omit-frame-pointer
+SANFLAGS = -g -fsanitize=address -fno-omit-frame-pointer
 
 SRC_DIR = src/
 OBJ_DIR = obj/

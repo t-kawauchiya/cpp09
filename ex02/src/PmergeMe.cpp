@@ -6,7 +6,7 @@
 /*   By: takawauc <takawauc@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 19:51:51 by takawauc          #+#    #+#             */
-/*   Updated: 2026/02/28 23:24:53 by takawauc         ###   ########.fr       */
+/*   Updated: 2026/03/01 09:25:10 by takawauc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,25 +16,26 @@
 #include <iostream>
 #include <vector>
 
+// PmergeMe
+//   constructor
 PmergeMe::PmergeMe() : data_() {}
 
 PmergeMe::PmergeMe(std::vector<t_node> data) : data_(data) {}
 
 PmergeMe::PmergeMe(std::vector<int> input) {
-  std::vector<int>::const_iterator it = input.begin();
-  while (it != input.end()) {
-    t_node node(*it);
-    data_.push_back(node);
-    it++;
-  }
+  for (std::vector<int>::const_iterator it = input.begin(); it != input.end();
+       it++)
+    data_.push_back(t_node(*it));
 }
 
 PmergeMe::PmergeMe(const PmergeMe& other) {
   data_ = other.data_;
 }
 
+//   destructor
 PmergeMe::~PmergeMe() {}
 
+//   operator
 PmergeMe& PmergeMe::operator=(const PmergeMe& other) {
   if (this == &other)
     return *this;
@@ -42,28 +43,24 @@ PmergeMe& PmergeMe::operator=(const PmergeMe& other) {
   return *this;
 }
 
+//   accesser
 std::vector<PmergeMe::t_node> PmergeMe::getData() const {
   return data_;
 }
 
 std::vector<int> PmergeMe::getResult() const {
   std::vector<int> res;
-  std::vector<PmergeMe::t_node>::const_iterator it = data_.begin();
-  while (it != data_.end()) {
+  for (std::vector<PmergeMe::t_node>::const_iterator it = data_.begin();
+       it != data_.end(); it++) {
     res.push_back(it->i_val);
-    it++;
   }
   return res;
 }
 
+//   solver
 void PmergeMe::solve() {
-  this->data_ = solve(this->data_);
-}
-
-void PmergeMe::swap(PmergeMe::t_node& a, PmergeMe::t_node& b) {
-  PmergeMe::t_node c(a);
-  a = b;
-  b = c;
+  std::cout << "input: " << data_ << std::endl;
+  data_ = solve(data_);
 }
 
 std::vector<PmergeMe::t_node>
@@ -79,13 +76,18 @@ PmergeMe::solve(const std::vector<PmergeMe::t_node>& v) {
   return expand(solved);
 }
 
+void PmergeMe::swap(PmergeMe::t_node& a, PmergeMe::t_node& b) {
+  PmergeMe::t_node c(a);
+  a = b;
+  b = c;
+}
+
 std::vector<PmergeMe::t_node> PmergeMe::fold(std::vector<PmergeMe::t_node> v) {
 
   std::vector<PmergeMe::t_node> ret;
   int n = v.size();
 
   std::cout << "\n=====fold=====\n";
-  std::cout << "input: " << v << std::endl;
   for (int i = 0; i + 1 < n; i += 2) {
     // if (v[i].getIval() > v[i + 1].getIval())
     if (CountedInt(v[i].getIval()) > CountedInt(v[i + 1].getIval()))
@@ -95,35 +97,66 @@ std::vector<PmergeMe::t_node> PmergeMe::fold(std::vector<PmergeMe::t_node> v) {
   }
   if (n % 2)
     ret.push_back(t_node(v[n - 1]));
-  std::cout << "ret: " << ret << std::endl;
+  std::cout << "ret: \n" << ret << std::endl;
   return ret;
 }
 
 std::vector<PmergeMe::t_node>
 PmergeMe::expand(const std::vector<PmergeMe::t_node> v) {
   std::vector<PmergeMe::t_node> ret;
-  std::cout << "\n=====expand=====" << std::endl;
-  std::cout << "input: " << v << std::endl;
+
+  std::cout << "\n=====expand=====\n";
+  int n = 2;
   if (v[0].level != 0) {
     ret.push_back(*v.begin()->low);
-    std::cout << "push begin.low: " << ret << std::endl;
   }
+  std::vector<PmergeMe::t_node>::const_iterator processed = v.begin();
   for (std::vector<PmergeMe::t_node>::const_iterator it = v.begin();
        it != v.end(); it++) {
     if (it->level == 0)
       ret.push_back(*it);
     else
       ret.push_back(*it->high);
-    std::cout << "push *it->high: " << ret << std::endl;
+    if (ret.size() >= pow(2, n) || it != v.end()) {
+      for (std::vector<PmergeMe::t_node>::const_iterator it2 = it;
+           it2 != processed && it->low; it2--) {
+        int index =
+            PmergeMe::getIndexToInsert(ret.begin(), ret.end(), *it->low);
+        ret.insert(ret.begin() + index, *it->low);
+      }
+      n++;
+      processed = it;
+    }
   }
-  for (std::vector<PmergeMe::t_node>::const_iterator it = v.begin() + 1;
-       it != v.end() && it->low; it++) {
-    int index = PmergeMe::getIndexToInsert(ret.begin(), ret.end(), *it->low);
-    ret.insert(ret.begin() + index, *it->low);
-    std::cout << "push *it->low : " << ret << std::endl;
-  }
+  std::cout << "ret: " << ret << std::endl;
   return ret;
 }
+
+// std::vector<PmergeMe::t_node>
+// PmergeMe::expand(const std::vector<PmergeMe::t_node> v) {
+//   std::vector<PmergeMe::t_node> ret;
+//   std::cout << "\n=====expand=====" << std::endl;
+//   std::cout << "input: " << v << std::endl;
+//   if (v[0].level != 0) {
+//     ret.push_back(*v.begin()->low);
+//     std::cout << "push begin.low: " << ret << std::endl;
+//   }
+//   for (std::vector<PmergeMe::t_node>::const_iterator it = v.begin();
+//        it != v.end(); it++) {
+//     if (it->level == 0)
+//       ret.push_back(*it);
+//     else
+//       ret.push_back(*it->high);
+//     std::cout << "push *it->high: " << ret << std::endl;
+//   }
+//   for (std::vector<PmergeMe::t_node>::const_iterator it = v.begin() + 1;
+//        it != v.end() && it->low; it++) {
+//     int index = PmergeMe::getIndexToInsert(ret.begin(), ret.end(), *it->low);
+//     ret.insert(ret.begin() + index, *it->low);
+//     std::cout << "push *it->low : " << ret << std::endl;
+//   }
+//   return ret;
+// }
 
 int PmergeMe::getIndexToInsert(
     std::vector<PmergeMe::t_node>::const_iterator begin,
@@ -140,12 +173,15 @@ int PmergeMe::getIndexToInsert(
   return right;
 }
 
+//   printer
 std::ostream& operator<<(std::ostream& os, const PmergeMe& pmm) {
   const std::vector<PmergeMe::t_node> data = pmm.getData();
   os << data;
   return os;
 }
 
+// s_node
+//   constructor
 PmergeMe::s_node::s_node() : level(0), i_val(0), high(NULL), low(NULL) {}
 
 PmergeMe::s_node::s_node(int i_val)
@@ -167,21 +203,13 @@ PmergeMe::s_node::s_node(const s_node& other) {
     low = NULL;
 }
 
+//   destructor
 PmergeMe::s_node::~s_node() {
   delete this->high;
   delete this->low;
 }
 
-int PmergeMe::s_node::getIval() const {
-  int lvl = this->level;
-  const t_node* node = this;
-
-  while (lvl--) {
-    node = node->high;
-  }
-  return node->i_val;
-}
-
+//   operator
 PmergeMe::s_node& PmergeMe::s_node::operator=(const PmergeMe::s_node& other) {
   if (this == &other)
     return *this;
@@ -200,23 +228,32 @@ PmergeMe::s_node& PmergeMe::s_node::operator=(const PmergeMe::s_node& other) {
   return *this;
 }
 
+//   accesser
+int PmergeMe::s_node::getIval() const {
+  int lvl = this->level;
+  const t_node* node = this;
+
+  while (lvl--) {
+    node = node->high;
+  }
+  return node->i_val;
+}
+
+//   printer
 std::ostream& operator<<(std::ostream& os,
                          const std::vector<PmergeMe::t_node>& v) {
   for (std::vector<PmergeMe::t_node>::const_iterator it = v.begin();
        it != v.end(); it++)
     os << *it;
-
   return os;
 }
 
 std::ostream& operator<<(std::ostream& os, const PmergeMe::t_node& node) {
-
   if (node.level == 0)
-    os << node.i_val;
+    os << node.i_val << " ";
   else {
-    os << "l" << node.level;
-    os << "{ " << *node.high << ", " << *node.low << "}";
+    os << "\nL" << node.level;
+    os << "{ " << *node.high << " " << *node.low << "}\n";
   }
-  os << " ";
   return os;
 }
