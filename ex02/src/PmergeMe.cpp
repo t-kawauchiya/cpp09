@@ -6,7 +6,7 @@
 /*   By: takawauc <takawauc@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 19:51:51 by takawauc          #+#    #+#             */
-/*   Updated: 2026/03/07 18:13:16 by takawauc         ###   ########.fr       */
+/*   Updated: 2026/03/08 00:04:46 by takawauc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,7 @@ std::vector<Node> PmergeMeVector::solve(const std::vector<Node>& v) {
   int size = v.size() - has_remainder(v);
 
   if (size <= 2) {
-    // DOUT << "\n===== size<=2 =====\n";
+    DOUT << "\n===== size<=2 =====\n";
     std::vector<Node> ret(v);
     if (size == 2 && compare(v[0], v[1]))
       swap(ret[0], ret[1]);
@@ -114,7 +114,7 @@ std::vector<Node> PmergeMeVector::fold(std::vector<Node> v) {
   int size = v.size() - has_remainder(v);
   int level = v[0].getLevel() + 1;
 
-  // DOUT << "=====fold=====" << std::endl;
+  DOUT << "=====fold=====" << std::endl;
   for (int i = 0; i + 1 < size; i += 2) {
     if (compare(v[i], v[i + 1]))
       ret.push_back(Node(level, 0, v[i], v[i + 1]));
@@ -137,32 +137,38 @@ std::vector<Node> PmergeMeVector::fold(std::vector<Node> v) {
 }
 
 std::vector<Node> PmergeMeVector::expand(const std::vector<Node> v) {
-  // DOUT << "\n=====expand=====\n";
+  DOUT << "\n=====expand=====\n";
   std::vector<Node> ret;
   size_t n = 4;
   std::vector<Node>::const_iterator processed = v.begin();
 
   ret.push_back(*v.begin()->getLow());
-  // DOUT << "push beginlow: \n" << ret << separator << std::endl;
+  // DOUT << "push begin-low: \n" << ret << separator << std::endl;
 
   for (std::vector<Node>::const_iterator it = v.begin();
        it != v.end() - has_remainder(v); it++) {
     if (it->getHigh())
       ret.push_back(*it->getHigh());
     // DOUT << "push high: \n" << ret << separator << std::endl;
-
-    if (it == v.end() - 2 && has_remainder(v) && v.back().getHigh()) {
-      binaryInsert(ret, ret.begin(), ret.end(), *v.back().getHigh());
-      // DOUT << "insert remainder: \n" << ret << separator << std::endl;
-    }
-
-    if (ret.size() >= n || it == v.end() - 1) {
+    if (ret.size() >= n) {
       for (std::vector<Node>::const_iterator it2 = it;
            it2 != processed && it2->getLow(); it2--) {
-
-        binaryInsert(ret, ret.begin(), ret.begin() + n - 1, *it2->getLow());
-        // DOUT << "insert low(high: " << it2->getHigh()->getTopVal() << "):
-        // \n"
+        binaryInsert(ret, ret.begin(), ret.begin() + n, *it2->getLow());
+        // DOUT << "insert low(high: " << it2->getHigh()->getTopVal() << "):\n"
+        //      << ret << separator << std::endl;
+      }
+      n *= 2;
+      processed = it;
+    }
+    if (it == v.end() - has_remainder(v) - 1) {
+      if (has_remainder(v) && v.back().getHigh()) {
+        binaryInsert(ret, ret.begin(), ret.end() + 1, *v.back().getHigh());
+        // DOUT << "insert remainder: \n" << ret << separator << std::endl;
+      }
+      for (std::vector<Node>::const_iterator it2 = it;
+           it2 != processed && it2->getLow(); it2--) {
+        binaryInsert(ret, ret.begin(), ret.begin() + n, *it2->getLow());
+        // DOUT << "insert low(high: " << it2->getHigh()->getTopVal() << "):\n"
         //      << ret << separator << std::endl;
       }
       n *= 2;
@@ -186,11 +192,14 @@ std::vector<Node>::iterator PmergeMeVector::binaryInsert(
 int PmergeMeVector::getIndexToInsert(std::vector<Node>::const_iterator begin,
                                      std::vector<Node>::const_iterator end,
                                      Node node) {
+  DOUT << "getIndexToInsert" << std::endl;
   int left = -1;
-  int right = end - begin;
+  int right = end - begin - 1;
   while (right - left > 1) {
     int mid = left + (right - left) / 2;
-    if (compare(*(begin + mid), node))
+    DOUT << "mid: " << mid << ", left: " << left << ", right: " << right
+         << std::endl;
+    if (!compare(node, *(begin + mid))) // node <= *(begin + mid)
       right = mid;
     else
       left = mid;
@@ -261,7 +270,7 @@ std::vector<int> PmergeMeDeque::getResult() const {
 //     solver
 void PmergeMeDeque::solve() {
   data_ = solve(data_);
-  DOUT << "[debug] compare count: " << CountedInt::getCnt() << std::endl;
+  // DOUT << "[debug] compare count: " << CountedInt::getCnt() << std::endl;
 }
 
 std::deque<Node> PmergeMeDeque::solve(const std::deque<Node>& v) {
@@ -339,11 +348,11 @@ std::deque<Node> PmergeMeDeque::expand(const std::deque<Node> v) {
       // DOUT << "insert remainder: \n" << ret << separator << std::endl;
     }
 
-    if (ret.size() >= n || it == v.end() - 1) {
+    if (ret.size() >= n || it == v.end() - has_remainder(v) - 1) {
       for (std::deque<Node>::const_iterator it2 = it;
            it2 != processed && it2->getLow(); it2--) {
 
-        binaryInsert(ret, ret.begin(), ret.begin() + n - 1, *it2->getLow());
+        binaryInsert(ret, ret.begin(), ret.begin() + n, *it2->getLow());
         // DOUT << "insert low(high: " << it2->getHigh()->getTopVal() << "):
         // \n"
         //      << ret << separator << std::endl;
