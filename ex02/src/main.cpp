@@ -6,7 +6,7 @@
 /*   By: takawauc <takawauc@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 16:56:41 by takawauc          #+#    #+#             */
-/*   Updated: 2026/02/28 23:27:35 by takawauc         ###   ########.fr       */
+/*   Updated: 2026/03/07 00:38:50 by takawauc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,6 @@ int main(int argc, char** argv) {
     return EXIT_FAILURE;
   }
   try {
-    CountedInt().reset_cnt();
     std::vector<int> input = parseArgsToVector(argc, argv);
     PmergeMe pmm(input);
     pmm.solve();
@@ -33,7 +32,7 @@ int main(int argc, char** argv) {
     for (std::vector<int>::const_iterator it = res.begin(); it != res.end();
          it++)
       std::cout << *it << " ";
-    std::cout << "\ncomp count: " << CountedInt().get_cnt() << std::endl;
+    std::cout << "\ncomp count: " << CountedInt::getCnt() << std::endl;
   } catch (std::runtime_error e) {
     std::cerr << "Error: " << e.what() << std::endl;
   }
