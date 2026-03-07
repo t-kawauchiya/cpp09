@@ -6,7 +6,7 @@
 /*   By: takawauc <takawauc@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 19:51:51 by takawauc          #+#    #+#             */
-/*   Updated: 2026/03/07 13:27:47 by takawauc         ###   ########.fr       */
+/*   Updated: 2026/03/07 13:33:45 by takawauc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,10 +66,10 @@ void PmergeMe::solve() {
 std::vector<Node> PmergeMe::solve(const std::vector<Node>& v) {
   int size = v.size() - has_remainder(v);
 
-  if (size == 2) {
-    std::cout << "\n===== size==2 =====\n";
+  if (size <= 2) {
+    std::cout << "\n===== size<=2 =====\n";
     std::vector<Node> ret(v);
-    if (compare(v[0], v[1]))
+    if (size == 2 && compare(v[0], v[1]))
       PmergeMe::swap(ret[0], ret[1]);
     return ret;
   }
