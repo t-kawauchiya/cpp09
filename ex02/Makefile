@@ -8,7 +8,7 @@ SANFLAGS = -g -fsanitize=address -fno-omit-frame-pointer
 
 SRC_DIR = src/
 OBJ_DIR = obj/
-SRC_FILES = main.cpp PmergeMe.cpp CountedInt.cpp
+SRC_FILES = main.cpp PmergeMe.cpp
 SRC = $(addprefix $(SRC_DIR), $(SRC_FILES))
 OBJ = $(addprefix $(OBJ_DIR), $(SRC_FILES:.cpp=.o))
 
@@ -23,8 +23,8 @@ $(OBJ_DIR)%.o: $(SRC_DIR)%.cpp
 	@mkdir -p $(OBJ_DIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-debug: CXXFLAGS += $(SANFLAGS)
-debug: LDFLAGS += $(SANFLAGS)
+debug: CXXFLAGS += $(SANFLAGS) -DDEBUG
+debug: LDFLAGS += $(SANFLAGS) 
 debug: fclean all
 
 clean:
