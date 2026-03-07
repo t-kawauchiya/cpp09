@@ -6,7 +6,7 @@
 /*   By: takawauc <takawauc@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 19:51:51 by takawauc          #+#    #+#             */
-/*   Updated: 2026/03/07 18:04:57 by takawauc         ###   ########.fr       */
+/*   Updated: 2026/03/07 18:13:16 by takawauc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -548,6 +548,9 @@ int CountedInt::getCnt() {
   return cnt_;
 }
 
+void CountedInt::resetCnt() {
+  cnt_ = 0;
+}
 //     printer
 bool CountedInt::operator>(const CountedInt& rhs) const {
   ++cnt_;

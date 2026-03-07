@@ -6,7 +6,7 @@
 /*   By: takawauc <takawauc@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 16:56:41 by takawauc          #+#    #+#             */
-/*   Updated: 2026/03/07 18:06:05 by takawauc         ###   ########.fr       */
+/*   Updated: 2026/03/07 18:13:31 by takawauc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ int main(int argc, char** argv) {
     pmmv.solve();
     clock_t end_v = clock();
 
+    CountedInt::resetCnt();
     clock_t start_d = clock();
     pmmd.solve();
     clock_t end_d = clock();

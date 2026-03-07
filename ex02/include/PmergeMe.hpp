@@ -6,7 +6,7 @@
 /*   By: takawauc <takawauc@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 16:57:27 by takawauc          #+#    #+#             */
-/*   Updated: 2026/03/07 18:05:20 by takawauc         ###   ########.fr       */
+/*   Updated: 2026/03/07 18:13:52 by takawauc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,6 +78,7 @@ public:
 
   int getValue() const;
   static int getCnt();
+  static void resetCnt();
 
   bool operator>(const CountedInt& rhs) const;
 
