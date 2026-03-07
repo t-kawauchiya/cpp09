@@ -6,7 +6,7 @@
 /*   By: takawauc <takawauc@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 19:51:51 by takawauc          #+#    #+#             */
-/*   Updated: 2026/03/08 00:21:52 by takawauc         ###   ########.fr       */
+/*   Updated: 2026/03/08 00:34:23 by takawauc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,9 +26,16 @@ bool compare(const Node& a, const Node& b) {
 }
 
 std::ostream& operator<<(std::ostream& os, const std::vector<int>& v) {
+  int cnt = 0;
+  int max = 30;
+
   for (std::vector<int>::const_iterator it = v.begin(); it != v.end(); it++) {
-    os << *it << " ";
+    cnt++;
+    if (cnt <= max)
+      os << *it << " ";
   }
+  if (cnt > max)
+    os << "... (" << cnt << " items)";
   return os;
 }
 
@@ -563,7 +570,7 @@ void CountedInt::resetCnt() {
 //     printer
 bool CountedInt::operator>(const CountedInt& rhs) const {
   ++cnt_;
-  DOUT << "[debug] cnt: " << cnt_ << ", compare: " << v_ << " > " << rhs.v_
-       << std::endl;
+  // DOUT << "[debug] cnt: " << cnt_ << ", compare: " << v_ << " > " << rhs.v_
+  //      << std::endl;
   return v_ > rhs.v_;
 }
