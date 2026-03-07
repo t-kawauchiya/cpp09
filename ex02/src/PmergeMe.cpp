@@ -6,7 +6,7 @@
 /*   By: takawauc <takawauc@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 19:51:51 by takawauc          #+#    #+#             */
-/*   Updated: 2026/03/08 00:04:46 by takawauc         ###   ########.fr       */
+/*   Updated: 2026/03/08 00:21:52 by takawauc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,7 @@ std::vector<Node> PmergeMeVector::solve(const std::vector<Node>& v) {
   int size = v.size() - has_remainder(v);
 
   if (size <= 2) {
-    DOUT << "\n===== size<=2 =====\n";
+    // DOUT << "\n===== size<=2 =====\n";
     std::vector<Node> ret(v);
     if (size == 2 && compare(v[0], v[1]))
       swap(ret[0], ret[1]);
@@ -114,7 +114,7 @@ std::vector<Node> PmergeMeVector::fold(std::vector<Node> v) {
   int size = v.size() - has_remainder(v);
   int level = v[0].getLevel() + 1;
 
-  DOUT << "=====fold=====" << std::endl;
+  // DOUT << "=====fold=====" << std::endl;
   for (int i = 0; i + 1 < size; i += 2) {
     if (compare(v[i], v[i + 1]))
       ret.push_back(Node(level, 0, v[i], v[i + 1]));
@@ -137,7 +137,7 @@ std::vector<Node> PmergeMeVector::fold(std::vector<Node> v) {
 }
 
 std::vector<Node> PmergeMeVector::expand(const std::vector<Node> v) {
-  DOUT << "\n=====expand=====\n";
+  // DOUT << "\n=====expand=====\n";
   std::vector<Node> ret;
   size_t n = 4;
   std::vector<Node>::const_iterator processed = v.begin();
@@ -167,11 +167,11 @@ std::vector<Node> PmergeMeVector::expand(const std::vector<Node> v) {
       }
       for (std::vector<Node>::const_iterator it2 = it;
            it2 != processed && it2->getLow(); it2--) {
-        binaryInsert(ret, ret.begin(), ret.begin() + n, *it2->getLow());
+        binaryInsert(ret, ret.begin(), ret.begin() + std::min(n, ret.size()),
+                     *it2->getLow());
         // DOUT << "insert low(high: " << it2->getHigh()->getTopVal() << "):\n"
         //      << ret << separator << std::endl;
       }
-      n *= 2;
       processed = it;
     }
   }
@@ -192,13 +192,13 @@ std::vector<Node>::iterator PmergeMeVector::binaryInsert(
 int PmergeMeVector::getIndexToInsert(std::vector<Node>::const_iterator begin,
                                      std::vector<Node>::const_iterator end,
                                      Node node) {
-  DOUT << "getIndexToInsert" << std::endl;
+  // DOUT << "getIndexToInsert" << std::endl;
   int left = -1;
   int right = end - begin - 1;
   while (right - left > 1) {
     int mid = left + (right - left) / 2;
-    DOUT << "mid: " << mid << ", left: " << left << ", right: " << right
-         << std::endl;
+    // DOUT << "mid: " << mid << ", left: " << left << ", right: " << right
+    //      << std::endl;
     if (!compare(node, *(begin + mid))) // node <= *(begin + mid)
       right = mid;
     else
@@ -563,7 +563,7 @@ void CountedInt::resetCnt() {
 //     printer
 bool CountedInt::operator>(const CountedInt& rhs) const {
   ++cnt_;
-  // DOUT << "[debug] cnt: " << cnt_ << ", compare: " << v_ << " > " << rhs.v_
-  //      << std::endl;
+  DOUT << "[debug] cnt: " << cnt_ << ", compare: " << v_ << " > " << rhs.v_
+       << std::endl;
   return v_ > rhs.v_;
 }
