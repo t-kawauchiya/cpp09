@@ -6,7 +6,7 @@
 /*   By: takawauc <takawauc@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 19:51:51 by takawauc          #+#    #+#             */
-/*   Updated: 2026/03/07 13:33:45 by takawauc         ###   ########.fr       */
+/*   Updated: 2026/03/07 13:38:57 by takawauc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -148,7 +148,7 @@ std::vector<Node> PmergeMe::expand(const std::vector<Node> v) {
       ret.insert(ret.begin() + index, *v.back().getHigh());
       std::cout << ret << "\n--------------" << std::endl;
     }
-    if (ret.size() >= n) {
+    if (ret.size() >= n || it == v.end() - 1) {
       for (std::vector<Node>::const_iterator it2 = it;
            it2 != processed && it2->getLow(); it2--) {
         std::cout << "insert *it2->low(high: " << it2->getHigh()->getTopVal()
