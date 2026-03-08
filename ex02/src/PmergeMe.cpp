@@ -6,7 +6,7 @@
 /*   By: takawauc <takawauc@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 19:51:51 by takawauc          #+#    #+#             */
-/*   Updated: 2026/03/08 00:34:23 by takawauc         ###   ########.fr       */
+/*   Updated: 2026/03/08 10:37:30 by takawauc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -342,33 +342,38 @@ std::deque<Node> PmergeMeDeque::expand(const std::deque<Node> v) {
   std::deque<Node>::const_iterator processed = v.begin();
 
   ret.push_back(*v.begin()->getLow());
-  // DOUT << "push beginlow: \n" << ret << separator << std::endl;
+  // DOUT << "push begin-low: \n" << ret << separator << std::endl;
 
   for (std::deque<Node>::const_iterator it = v.begin();
        it != v.end() - has_remainder(v); it++) {
     if (it->getHigh())
       ret.push_back(*it->getHigh());
     // DOUT << "push high: \n" << ret << separator << std::endl;
-
-    if (it == v.end() - 2 && has_remainder(v) && v.back().getHigh()) {
-      binaryInsert(ret, ret.begin(), ret.end(), *v.back().getHigh());
-      // DOUT << "insert remainder: \n" << ret << separator << std::endl;
-    }
-
-    if (ret.size() >= n || it == v.end() - has_remainder(v) - 1) {
+    if (ret.size() >= n) {
       for (std::deque<Node>::const_iterator it2 = it;
            it2 != processed && it2->getLow(); it2--) {
-
         binaryInsert(ret, ret.begin(), ret.begin() + n, *it2->getLow());
-        // DOUT << "insert low(high: " << it2->getHigh()->getTopVal() << "):
-        // \n"
+        // DOUT << "insert low(high: " << it2->getHigh()->getTopVal() << "):\n"
         //      << ret << separator << std::endl;
       }
       n *= 2;
       processed = it;
     }
+    if (it == v.end() - has_remainder(v) - 1) {
+      if (has_remainder(v) && v.back().getHigh()) {
+        binaryInsert(ret, ret.begin(), ret.end() + 1, *v.back().getHigh());
+        // DOUT << "insert remainder: \n" << ret << separator << std::endl;
+      }
+      for (std::deque<Node>::const_iterator it2 = it;
+           it2 != processed && it2->getLow(); it2--) {
+        binaryInsert(ret, ret.begin(), ret.begin() + std::min(n, ret.size()),
+                     *it2->getLow());
+        // DOUT << "insert low(high: " << it2->getHigh()->getTopVal() << "):\n"
+        //      << ret << separator << std::endl;
+      }
+      processed = it;
+    }
   }
-
   if (has_remainder(v) && v.back().getLow())
     ret.push_back(*v.back().getLow());
   // DOUT << "update remainder: \n" << ret << separator << std::endl;
@@ -387,10 +392,10 @@ int PmergeMeDeque::getIndexToInsert(std::deque<Node>::const_iterator begin,
                                     std::deque<Node>::const_iterator end,
                                     Node node) {
   int left = -1;
-  int right = end - begin;
+  int right = end - begin - 1;
   while (right - left > 1) {
     int mid = left + (right - left) / 2;
-    if (compare(*(begin + mid), node))
+    if (!compare(node, *(begin + mid))) // node <= *(begin + mid)
       right = mid;
     else
       left = mid;
