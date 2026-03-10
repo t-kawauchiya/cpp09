@@ -6,7 +6,7 @@
 /*   By: takawauc <takawauc@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 16:56:41 by takawauc          #+#    #+#             */
-/*   Updated: 2026/03/08 10:35:06 by takawauc         ###   ########.fr       */
+/*   Updated: 2026/03/10 21:14:16 by takawauc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,21 +28,19 @@ int main(int argc, char** argv) {
   }
   try {
     std::vector<int> input = parseArgsToVector(argc, argv);
-    PmergeMeVector pmmv(input);
-    PmergeMeDeque pmmd(input);
+    PmergeMe pmm(input);
 
     clock_t start_v = clock();
-    pmmv.solve();
+    pmm.solveVector();
     clock_t end_v = clock();
 
-    CountedInt::resetCnt();
     clock_t start_d = clock();
-    pmmd.solve();
+    pmm.solveDeque();
     clock_t end_d = clock();
 
     std::cout << "Before: " << input << std::endl;
-    std::cout << "After:  " << pmmv.getResult() << std::endl;
-    std::cout << "After:  " << pmmd.getResult() << std::endl;
+    std::cout << "After:  " << pmm.getResultVector() << std::endl;
+    DOUT << "After:  " << pmm.getResultDeque() << std::endl;
     std::cout << "Time to process a range of " << input.size()
               << " elements with std::vector : " << std::fixed
               << std::setprecision(5) << calcTime(start_v, end_v) << "us\n";

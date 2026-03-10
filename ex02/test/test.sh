@@ -45,6 +45,8 @@ run_test() {
 run_test 3
 run_test 1 2
 run_test 2 1
+run_test $(shuf -r -i 1-5 -n 10 | tr "\n" " ")
+
 run_test $(shuf -i 1-3 -n 3 | tr "\n" " ")
 run_test $(shuf -i 1-4 -n 4 | tr "\n" " ")
 run_test $(shuf -i 1-5 -n 5 | tr "\n" " ")
