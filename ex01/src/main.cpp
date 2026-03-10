@@ -6,7 +6,7 @@
 /*   By: takawauc <takawauc@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 16:56:41 by takawauc          #+#    #+#             */
-/*   Updated: 2026/02/27 16:39:50 by takawauc         ###   ########.fr       */
+/*   Updated: 2026/03/10 21:33:38 by takawauc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ int main(int argc, char** argv) {
   }
   try {
     std::cout << solve(argv[1]) << std::endl;
+
   } catch (std::runtime_error e) {
     std::cerr << "Error: " << e.what() << std::endl;
   }
@@ -53,5 +54,7 @@ int solve(std::string str) {
     // std::cout << "item: " << item << std::endl;
     rpn.acceptToken(item);
   }
+  if (rpn.getStack().size() != 1)
+    throw std::runtime_error("bad input : " + str);
   return rpn.getTop();
 }

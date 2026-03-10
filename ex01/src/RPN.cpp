@@ -6,7 +6,7 @@
 /*   By: takawauc <takawauc@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 19:51:51 by takawauc          #+#    #+#             */
-/*   Updated: 2026/02/27 16:43:03 by takawauc         ###   ########.fr       */
+/*   Updated: 2026/03/10 21:34:51 by takawauc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,14 +68,14 @@ void RPN::acceptToken(std::string token) {
   case '-':
     sub();
     break;
-  case '*':;
+  case '*':
     mul();
     break;
-  case '/':;
+  case '/':
     div();
     break;
   default:
-    throw std::runtime_error("bad input : " + token);
+    throw std::runtime_error("bad input : \"" + token + "\"");
   }
 }
 
