@@ -1,31 +1,36 @@
 NAME = btc
 
 CXX = c++
-CXXFLAGS = -Wall -Wextra -Werror -std=c++98 -pedantic -Iinclude
+CXXFLAGS = -Wall -Wextra -Werror -std=c++98 -pedantic -Iinclude -MMD -MP
 LDFLAGS =
 
 SANFLAGS = -g -fsanitize=address -fsanitize=leak -fno-omit-frame-pointer
 
-SRC_DIR = src/
-OBJ_DIR = obj/
+SRC_DIR = src
+OBJ_DIR = obj
 SRC_FILES = main.cpp BitcoinExchange.cpp 
-SRC = $(addprefix $(SRC_DIR), $(SRC_FILES))
-OBJ = $(addprefix $(OBJ_DIR), $(SRC_FILES:.cpp=.o))
+SRC = $(addprefix $(SRC_DIR)/, $(SRC_FILES))
+OBJ = $(addprefix $(OBJ_DIR)/, $(SRC_FILES:.cpp=.o))
+DEPS = $(OBJ:.o=.d)
 
 INPUT_TXT = input.txt
 
 all: $(NAME)
 
 $(NAME): $(OBJ)
-	$(CXX) $(CXXFLAGS) $(OBJ) $(LDFLAGS) -o $(NAME)
+	$(CXX) $(OBJ) $(LDFLAGS) -o $(NAME)
 
-$(OBJ_DIR)%.o: $(SRC_DIR)%.cpp
-	@mkdir -p $(OBJ_DIR)
+$(OBJ_DIR):
+	mkdir -p $(OBJ_DIR)
+
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp | $(OBJ_DIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 debug: CXXFLAGS += $(SANFLAGS)
 debug: LDFLAGS += $(SANFLAGS)
 debug: fclean all
+
+-include $(DEPS)
 
 clean:
 	rm -rf $(OBJ_DIR)
@@ -33,17 +38,16 @@ clean:
 fclean: clean
 	rm -f $(NAME)
 
-re: fclean all
+re:
+	@$(MAKE) fclean
+	@$(MAKE) all
 
 val: re
 	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(NAME)
-	
-leak_check: debug
-	ASAN_OPTIONS=detect_leaks=1 \
-	LSAN_OPTIONS=use_registers=0:report_objects=1 \
-	./$(NAME)
 
 test: debug
+	ASAN_OPTIONS=detect_leaks=1 \
+	LSAN_OPTIONS=use_registers=0:report_objects=1 \
 	./$(NAME) $(INPUT_TXT)
 
-.PHONY: all debug clean fclean re val leak_check test
+.PHONY: all debug clean fclean re val test
