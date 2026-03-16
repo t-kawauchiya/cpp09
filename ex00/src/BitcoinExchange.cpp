@@ -6,7 +6,7 @@
 /*   By: takawauc <takawauc@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 19:51:51 by takawauc          #+#    #+#             */
-/*   Updated: 2026/03/16 20:43:53 by takawauc         ###   ########.fr       */
+/*   Updated: 2026/03/16 21:59:07 by takawauc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,8 +125,6 @@ int parseStringTime(std::string str, time_t& t) {
 static std::string parseTmToString(time_t t);
 
 void BitcoinExchange::putData(std::pair<time_t, double> data) {
-  std::cout << "data: {" << data.first << ", " << data.second << "}"
-            << std::endl;
   std::string date = parseTmToString(data.first);
   std::cout << date << " => " << data.second << " = ";
   std::cout << getPrice(data.first) * data.second << "\n";
