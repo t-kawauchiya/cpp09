@@ -4,6 +4,7 @@ en.subject.pdf
 compile_commands.json
 .clang-format
 link.txt
+obj
 
 ex00/btc
 ex01/RPN

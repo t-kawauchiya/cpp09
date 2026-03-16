@@ -6,7 +6,7 @@
 /*   By: takawauc <takawauc@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 19:51:51 by takawauc          #+#    #+#             */
-/*   Updated: 2026/02/27 13:23:25 by takawauc         ###   ########.fr       */
+/*   Updated: 2026/03/16 19:39:38 by takawauc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,15 +20,17 @@
 #include <time.h>
 #include <utility>
 
-BitcoinExchange::BitcoinExchange(std::string filename) { this->init(filename); }
+BitcoinExchange::BitcoinExchange(std::string filename) {
+  this->importData(filename);
+}
 
-BitcoinExchange::BitcoinExchange(const BitcoinExchange &other) {
+BitcoinExchange::BitcoinExchange(const BitcoinExchange& other) {
   this->data_ = other.data_;
 }
 
 BitcoinExchange::~BitcoinExchange() {}
 
-BitcoinExchange &BitcoinExchange::operator=(const BitcoinExchange &other) {
+BitcoinExchange& BitcoinExchange::operator=(const BitcoinExchange& other) {
   if (this == &other)
     return *this;
   this->data_ = other.data_;
@@ -53,27 +55,26 @@ double BitcoinExchange::getPrice(time_t date) const {
   return (--it)->second;
 }
 
-int parseLine(std::string line, std::pair<time_t, double> &data);
+static int importLine(std::string line, std::pair<time_t, double>& data);
 
-int BitcoinExchange::init(std::string filepath) {
+int BitcoinExchange::importData(std::string filepath) {
   std::ifstream ifs(filepath.c_str());
   if (!ifs)
     return EXIT_FAILURE;
+
   std::string line;
   if (!std::getline(ifs, line))
     return EXIT_FAILURE;
   while (std::getline(ifs, line)) {
     std::pair<time_t, double> data;
-    if (parseLine(line, data))
-      return EXIT_FAILURE;
-    if (ifs.fail())
+    if (importLine(line, data))
       return EXIT_FAILURE;
     data_.push_back(data);
   }
   return EXIT_SUCCESS;
 }
 
-int parseLine(std::string line, std::pair<time_t, double> &data) {
+static int importLine(std::string line, std::pair<time_t, double>& data) {
   std::istringstream iss(line);
   if (!iss)
     return EXIT_FAILURE;
@@ -94,7 +95,26 @@ int parseLine(std::string line, std::pair<time_t, double> &data) {
   return EXIT_SUCCESS;
 }
 
-std::ostream &operator<<(std::ostream &os, const BitcoinExchange &be) {
+static std::string parseTmToString(time_t t);
+
+void BitcoinExchange::putData(std::pair<time_t, double> data) {
+  std::string date = parseTmToString(data.first);
+  std::cout << date << " => " << data.second << " = ";
+  std::cout << getPrice(data.first) * data.second << "\n";
+}
+
+static std::string parseTmToString(time_t t) {
+  std::tm* tm = std::localtime(&t);
+  if (!tm)
+    return std::string();
+
+  char buf[32];
+  if (std::strftime(buf, sizeof(buf), "%Y-%m-%d", tm) == 0)
+    return std::string();
+  return std::string(buf);
+}
+
+std::ostream& operator<<(std::ostream& os, const BitcoinExchange& be) {
   std::list<std::pair<time_t, double> > data = be.getData();
 
   std::list<std::pair<time_t, double> >::iterator it = data.begin();
