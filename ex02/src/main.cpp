@@ -6,7 +6,7 @@
 /*   By: takawauc <takawauc@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 16:56:41 by takawauc          #+#    #+#             */
-/*   Updated: 2026/03/10 21:14:16 by takawauc         ###   ########.fr       */
+/*   Updated: 2026/03/16 22:52:27 by takawauc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,9 @@
 #include <sstream>
 #include <time.h>
 
-std::vector<int> parseArgsToVector(int argc, char** argv);
+std::vector<int> parseStrArrToVector(char** sarr, int size);
 
-double calcTime(clock_t start, clock_t end);
+double getDuration(clock_t start, clock_t end);
 
 int main(int argc, char** argv) {
   if (argc == 1) {
@@ -27,7 +27,7 @@ int main(int argc, char** argv) {
     return EXIT_FAILURE;
   }
   try {
-    std::vector<int> input = parseArgsToVector(argc, argv);
+    std::vector<int> input = parseStrArrToVector(argv + 1, argc - 1);
     PmergeMe pmm(input);
 
     clock_t start_v = clock();
@@ -43,27 +43,27 @@ int main(int argc, char** argv) {
     DOUT << "After:  " << pmm.getResultDeque() << std::endl;
     std::cout << "Time to process a range of " << input.size()
               << " elements with std::vector : " << std::fixed
-              << std::setprecision(5) << calcTime(start_v, end_v) << "us\n";
+              << std::setprecision(5) << getDuration(start_v, end_v) << "us\n";
     std::cout << "Time to process a range of " << input.size()
               << " elements with std::deque  : " << std::fixed
-              << std::setprecision(5) << calcTime(start_d, end_d) << "us\n";
+              << std::setprecision(5) << getDuration(start_d, end_d) << "us\n";
   } catch (std::runtime_error e) {
     std::cerr << "Error: " << e.what() << std::endl;
   }
 }
 
-double calcTime(clock_t start, clock_t end) {
+double getDuration(clock_t start, clock_t end) {
   return static_cast<double>(end - start) / CLOCKS_PER_SEC;
 }
 
-std::vector<int> parseArgsToVector(int argc, char** argv) {
+std::vector<int> parseStrArrToVector(char** sarr, int size) {
   std::vector<int> ret;
-  for (int i = 1; i < argc; i++) {
-    std::stringstream ss(argv[i]);
+  for (int i = 0; i < size; i++) {
+    std::stringstream ss(sarr[i]);
     int elem;
     ss >> elem;
     if (!ss)
-      throw std::runtime_error("invald input : " + ss.str());
+      throw std::invalid_argument("invald input : " + ss.str());
     ret.push_back(elem);
   }
   return ret;

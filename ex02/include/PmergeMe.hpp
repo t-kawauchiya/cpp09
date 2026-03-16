@@ -6,16 +6,14 @@
 /*   By: takawauc <takawauc@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 16:57:27 by takawauc          #+#    #+#             */
-/*   Updated: 2026/03/08 19:32:08 by takawauc         ###   ########.fr       */
+/*   Updated: 2026/03/16 23:44:57 by takawauc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef _PMERGE_ME_H_
 #define _PMERGE_ME_H_
 
-#include <ctime>
 #include <deque>
-#include <iostream>
 #include <ostream>
 #include <vector>
 
@@ -103,13 +101,20 @@ private:
   std::vector<Node> solveVector(const std::vector<Node>& v);
   static std::vector<Node> foldVector(const std::vector<Node> v);
   static std::vector<Node> expandVector(const std::vector<Node> v);
+  static void processLowElems(std::vector<Node>& ret,
+                              std::vector<Node>::const_iterator begin,
+                              std::vector<Node>::const_iterator end, size_t n);
 
   std::deque<Node> solveDeque(const std::deque<Node>& v);
   static std::deque<Node> foldDeque(const std::deque<Node> v);
   static std::deque<Node> expandDeque(const std::deque<Node> v);
+  static void processLowElems(std::deque<Node>& ret,
+                              std::deque<Node>::const_iterator begin,
+                              std::deque<Node>::const_iterator end, size_t n);
+
   std::vector<int> input_;
-  std::vector<int> result_vector_;
-  std::vector<int> result_deque_;
+  std::vector<int> resultVector_;
+  std::vector<int> resultDeque_;
 };
 
 std::ostream& operator<<(std::ostream& os, const PmergeMe& be);

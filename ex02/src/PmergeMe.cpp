@@ -6,11 +6,12 @@
 /*   By: takawauc <takawauc@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 19:51:51 by takawauc          #+#    #+#             */
-/*   Updated: 2026/03/10 21:20:09 by takawauc         ###   ########.fr       */
+/*   Updated: 2026/03/16 23:59:14 by takawauc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "PmergeMe.hpp"
+#include <algorithm>
 #include <cctype>
 #include <iostream>
 #include <vector>
@@ -43,9 +44,14 @@ std::ostream& operator<<(std::ostream& os, const std::vector<int>& v) {
 //   PmergeMe
 // ===================================================================
 //     constructor
-PmergeMe::PmergeMe() : input_() {}
-PmergeMe::PmergeMe(std::vector<int> input) : input_(input) {}
-PmergeMe::PmergeMe(const PmergeMe& other) {
+PmergeMe::PmergeMe()
+    : input_(std::vector<int>()), resultVector_(std::vector<int>()),
+      resultDeque_(std::vector<int>()) {}
+PmergeMe::PmergeMe(std::vector<int> input)
+    : input_(input), resultVector_(std::vector<int>()),
+      resultDeque_(std::vector<int>()) {}
+PmergeMe::PmergeMe(const PmergeMe& other)
+    : resultVector_(std::vector<int>()), resultDeque_(std::vector<int>()) {
   input_ = other.input_;
 }
 
@@ -57,6 +63,8 @@ PmergeMe& PmergeMe::operator=(const PmergeMe& other) {
   if (this == &other)
     return *this;
   input_ = other.input_;
+  resultVector_ = other.resultVector_;
+  resultDeque_ = other.resultDeque_;
   return *this;
 }
 
@@ -65,10 +73,10 @@ std::vector<int> PmergeMe::getInput() const {
   return input_;
 }
 std::vector<int> PmergeMe::getResultVector() const {
-  return result_vector_;
+  return resultVector_;
 }
 std::vector<int> PmergeMe::getResultDeque() const {
-  return result_deque_;
+  return resultDeque_;
 }
 
 //     solver
@@ -84,7 +92,7 @@ void PmergeMe::solveVector() {
 
   for (std::vector<Node>::const_iterator it = result_vector.begin();
        it != result_vector.end(); it++)
-    result_vector_.push_back(it->getVal());
+    resultVector_.push_back(it->getVal());
 
   DOUT << "[debug] compare count: " << CountedInt::getCnt() << std::endl;
 }
@@ -93,11 +101,11 @@ std::vector<Node> PmergeMe::solveVector(const std::vector<Node>& v) {
   int size = v.size() - hasRemainder(v);
 
   if (size <= 2) {
-    // DOUT << "\n===== size<=2 =====\n";
+    DOUT << "\n===== size<=2 =====\n";
     std::vector<Node> ret(v);
     if (size == 2 && compare(v[0], v[1]))
       swap(ret[0], ret[1]);
-    // DOUT << ret;
+    DOUT << ret;
     return ret;
   }
   std::vector<Node> folded = foldVector(v);
@@ -110,7 +118,7 @@ std::vector<Node> PmergeMe::foldVector(std::vector<Node> v) {
   int size = v.size() - hasRemainder(v);
   int level = v[0].getLevel() + 1;
 
-  // DOUT << "=====fold=====" << std::endl;
+  DOUT << "=====fold=====" << std::endl;
   for (int i = 0; i + 1 < size; i += 2) {
     if (compare(v[i], v[i + 1]))
       ret.push_back(Node(level, 0, &v[i], &v[i + 1]));
@@ -126,55 +134,61 @@ std::vector<Node> PmergeMe::foldVector(std::vector<Node> v) {
   if (rem.getHigh() || rem.getLow())
     ret.push_back(rem);
 
-  // DOUT << "\nsize: " << ret.size() - has_remainder(ret)
-  //      << ", has_remainder: " << has_remainder(ret) << "\n"
-  //      << ret;
+  DOUT << "size: " << ret.size() - hasRemainder(ret)
+       << ", hasRemainder: " << hasRemainder(ret) << "\n"
+       << ret;
   return ret;
 }
 
 std::vector<Node> PmergeMe::expandVector(const std::vector<Node> v) {
-  // DOUT << "\n=====expand=====\n";
+  DOUT << "\n=====expand=====\n";
   std::vector<Node> ret;
   size_t n = 4;
   std::vector<Node>::const_iterator processed = v.begin();
 
   ret.push_back(*v.begin()->getLow());
-  // DOUT << "push begin-low: \n" << ret << separator << std::endl;
+  DOUT << "push begin-low: " << v.begin()->getLow()->getTopVal() << "\n"
+       << ret << separator << std::endl;
 
   for (std::vector<Node>::const_iterator it = v.begin();
        it != v.end() - hasRemainder(v); it++) {
     if (it->getHigh())
       ret.push_back(*it->getHigh());
-    // DOUT << "push high: \n" << ret << separator << std::endl;
+    DOUT << "push high: " << it->getHigh()->getTopVal() << "\n"
+         << ret << separator << std::endl;
     if (ret.size() >= n) {
-      for (std::vector<Node>::const_iterator it2 = it;
-           it2 != processed && it2->getLow(); it2--) {
-        binaryInsert(ret, ret.begin(), ret.begin() + n, *it2->getLow());
-        // DOUT << "insert low(high: " << it2->getHigh()->getTopVal() << "):\n"
-        //      << ret << separator << std::endl;
-      }
-      n *= 2;
+      processLowElems(ret, it, processed, n);
       processed = it;
+      n *= 2;
     }
     if (it == v.end() - hasRemainder(v) - 1) {
       if (hasRemainder(v) && v.back().getHigh()) {
         binaryInsert(ret, ret.begin(), ret.end() + 1, *v.back().getHigh());
-        // DOUT << "insert remainder: \n" << ret << separator << std::endl;
+        DOUT << "insert remainder: " << v.back().getHigh()->getTopVal() << "\n"
+             << ret << separator << std::endl;
       }
-      for (std::vector<Node>::const_iterator it2 = it;
-           it2 != processed && it2->getLow(); it2--) {
-        binaryInsert(ret, ret.begin(), ret.begin() + std::min(n, ret.size()),
-                     *it2->getLow());
-        // DOUT << "insert low(high: " << it2->getHigh()->getTopVal() << "):\n"
-        //      << ret << separator << std::endl;
-      }
+      processLowElems(ret, it, processed, n);
       processed = it;
     }
   }
   if (hasRemainder(v) && v.back().getLow())
     ret.push_back(*v.back().getLow());
-  // DOUT << "update remainder: \n" << ret << separator << std::endl;
+  DOUT << "update remainder: \n" << ret << separator << std::endl;
   return ret;
+}
+
+void PmergeMe::processLowElems(std::vector<Node>& ret,
+                               std::vector<Node>::const_iterator begin,
+                               std::vector<Node>::const_iterator end,
+                               size_t n) {
+  for (std::vector<Node>::const_iterator it = begin; it != end && it->getLow();
+       it--) {
+    PmergeMe::binaryInsert(
+        ret, ret.begin(), ret.begin() + std::min(n, ret.size()), *it->getLow());
+    DOUT << "insert low: " << it->getLow()->getTopVal()
+         << " (high: " << it->getHigh()->getTopVal() << ")\n"
+         << ret << separator << std::endl;
+  }
 }
 
 bool PmergeMe::hasRemainder(std::vector<Node> v) {
@@ -223,7 +237,7 @@ void PmergeMe::solveDeque() {
 
   for (std::deque<Node>::const_iterator it = result_deque.begin();
        it != result_deque.end(); it++)
-    result_deque_.push_back(it->getVal());
+    resultDeque_.push_back(it->getVal());
 
   DOUT << "[debug] compare count: " << CountedInt::getCnt() << std::endl;
 }
@@ -277,25 +291,29 @@ std::deque<Node> PmergeMe::expandDeque(const std::deque<Node> v) {
     if (it->getHigh())
       ret.push_back(*it->getHigh());
     if (ret.size() >= n) {
-      for (std::deque<Node>::const_iterator it2 = it;
-           it2 != processed && it2->getLow(); it2--)
-        binaryInsert(ret, ret.begin(), ret.begin() + n, *it2->getLow());
-      n *= 2;
+      processLowElems(ret, it, processed, n);
       processed = it;
+      n *= 2;
     }
     if (it == v.end() - hasRemainder(v) - 1) {
       if (hasRemainder(v) && v.back().getHigh())
         binaryInsert(ret, ret.begin(), ret.end() + 1, *v.back().getHigh());
-      for (std::deque<Node>::const_iterator it2 = it;
-           it2 != processed && it2->getLow(); it2--)
-        binaryInsert(ret, ret.begin(), ret.begin() + std::min(n, ret.size()),
-                     *it2->getLow());
+      processLowElems(ret, it, processed, n);
       processed = it;
     }
   }
   if (hasRemainder(v) && v.back().getLow())
     ret.push_back(*v.back().getLow());
   return ret;
+}
+
+void PmergeMe::processLowElems(std::deque<Node>& ret,
+                               std::deque<Node>::const_iterator begin,
+                               std::deque<Node>::const_iterator end, size_t n) {
+  for (std::deque<Node>::const_iterator it = begin; it != end && it->getLow();
+       it--)
+    PmergeMe::binaryInsert(
+        ret, ret.begin(), ret.begin() + std::min(n, ret.size()), *it->getLow());
 }
 
 bool PmergeMe::hasRemainder(std::deque<Node> v) {
@@ -413,6 +431,7 @@ void Node::setLow(Node* node) {
   low_ = node;
 }
 
+//     printer
 std::ostream& operator<<(std::ostream& os, const Node& node) {
   int indent = 2 * (4 - node.getLevel());
   if (node.getLevel() == 0) {
@@ -445,6 +464,26 @@ std::ostream& operator<<(std::ostream& os, const Node& node) {
   if (node.getLevel() != 1)
     os << std::string(indent, ' ');
   os << "}\n";
+  return os;
+}
+
+std::ostream& operator<<(std::ostream& os, const std::vector<Node>& v) {
+  for (std::vector<Node>::const_iterator it = v.begin(); it != v.end(); it++) {
+    if (PmergeMe::hasRemainder(v) && it == v.end() - 1 &&
+        v.begin()->getLevel() > 1)
+      os << "---rem---\n";
+    os << *it;
+  }
+  return os;
+}
+
+std::ostream& operator<<(std::ostream& os, const std::deque<Node>& v) {
+  for (std::deque<Node>::const_iterator it = v.begin(); it != v.end(); it++) {
+    if (PmergeMe::hasRemainder(v) && it == v.end() - 1 &&
+        v.begin()->getLevel() > 1)
+      os << "---rem---\n";
+    os << *it;
+  }
   return os;
 }
 
@@ -485,25 +524,4 @@ bool CountedInt::operator>(const CountedInt& rhs) const {
   // DOUT << "[debug] cnt: " << cnt_ << ", compare: " << v_ << " > " << rhs.v_
   //      << std::endl;
   return v_ > rhs.v_;
-}
-
-//     printer
-std::ostream& operator<<(std::ostream& os, const std::vector<Node>& v) {
-  for (std::vector<Node>::const_iterator it = v.begin(); it != v.end(); it++) {
-    if (PmergeMe::hasRemainder(v) && it == v.end() - 1 &&
-        v.begin()->getLevel() > 1)
-      os << "---rem---\n";
-    os << *it;
-  }
-  return os;
-}
-
-std::ostream& operator<<(std::ostream& os, const std::deque<Node>& v) {
-  for (std::deque<Node>::const_iterator it = v.begin(); it != v.end(); it++) {
-    if (PmergeMe::hasRemainder(v) && it == v.end() - 1 &&
-        v.begin()->getLevel() > 1)
-      os << "---rem---\n";
-    os << *it;
-  }
-  return os;
 }
