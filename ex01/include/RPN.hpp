@@ -6,14 +6,13 @@
 /*   By: takawauc <takawauc@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 16:57:27 by takawauc          #+#    #+#             */
-/*   Updated: 2026/02/27 14:41:22 by takawauc         ###   ########.fr       */
+/*   Updated: 2026/03/16 22:34:07 by takawauc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef _RPN_H_
 #define _RPN_H_
 
-#include <ctime>
 #include <ostream>
 #include <stack>
 
@@ -21,17 +20,17 @@ class RPN {
 public:
   RPN();
   RPN(std::stack<int> stack);
-  RPN(const RPN &other);
+  RPN(const RPN& other);
 
   ~RPN();
 
-  RPN &operator=(const RPN &other);
+  RPN& operator=(const RPN& other);
 
   std::stack<int> getStack() const;
 
-  int getTop();
+  int getTop() const;
 
-  void acceptToken(std::string Token);
+  void acceptToken(const std::string& Token);
 
 private:
   void pushNum(int num);
@@ -43,6 +42,6 @@ private:
   std::stack<int> stack_;
 };
 
-std::ostream &operator<<(std::ostream &os, const RPN &be);
+std::ostream& operator<<(std::ostream& os, const RPN& be);
 
 #endif

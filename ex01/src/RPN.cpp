@@ -6,15 +6,11 @@
 /*   By: takawauc <takawauc@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 19:51:51 by takawauc          #+#    #+#             */
-/*   Updated: 2026/03/10 21:34:51 by takawauc         ###   ########.fr       */
+/*   Updated: 2026/03/16 22:34:39 by takawauc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "RPN.hpp"
-#include <cctype>
-#include <cstdio>
-#include <cstdlib>
-#include <ctime>
 #include <iostream>
 #include <stack>
 
@@ -39,7 +35,7 @@ std::stack<int> RPN::getStack() const {
   return stack_;
 }
 
-int RPN::getTop() {
+int RPN::getTop() const {
   if (stack_.empty())
     throw std::runtime_error("accessing top of empty stack.");
   return stack_.top();
@@ -53,9 +49,9 @@ bool isAccebtableChar(char c) {
   return false;
 }
 
-void RPN::acceptToken(std::string token) {
+void RPN::acceptToken(const std::string& token) {
   if (token.size() != 1 || !isAccebtableChar(token.c_str()[0]))
-    throw std::runtime_error("bad input : \"" + token + "\"");
+    throw std::invalid_argument("bad input : \"" + token + "\"");
   char c = token.c_str()[0];
   if (std::isdigit(c)) {
     pushNum(c - '0');
@@ -75,7 +71,7 @@ void RPN::acceptToken(std::string token) {
     div();
     break;
   default:
-    throw std::runtime_error("bad input : \"" + token + "\"");
+    throw std::invalid_argument("bad input : \"" + token + "\"");
   }
 }
 
@@ -119,6 +115,8 @@ void RPN::div() {
   a = stack_.top();
   stack_.pop();
   b = stack_.top();
+  if (a == 0)
+    throw std::domain_error("division by zero");
   stack_.pop();
   stack_.push(b / a);
 }
