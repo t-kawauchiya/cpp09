@@ -6,7 +6,7 @@
 /*   By: takawauc <takawauc@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 16:57:27 by takawauc          #+#    #+#             */
-/*   Updated: 2026/03/16 23:44:57 by takawauc         ###   ########.fr       */
+/*   Updated: 2026/03/17 23:19:50 by takawauc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,8 @@
 #include <deque>
 #include <ostream>
 #include <vector>
+
+std::ostream& operator<<(std::ostream& os, const std::vector<int>& v);
 
 class Node {
 public:
@@ -44,7 +46,12 @@ private:
   Node* low_;
 };
 
+void swap(Node& a, Node& b);
+bool compare(const Node& a, const Node& b);
+
 std::ostream& operator<<(std::ostream& os, const Node& node);
+std::ostream& operator<<(std::ostream& os, const std::vector<Node>& v);
+std::ostream& operator<<(std::ostream& os, const std::deque<Node>& v);
 
 class CountedInt {
 public:
@@ -83,6 +90,7 @@ public:
 
   PmergeMe& operator=(const PmergeMe& other);
 
+  // for vector
   static bool hasRemainder(std::vector<Node> v);
   static int getIndexToInsert(std::vector<Node>::const_iterator begin,
                               std::vector<Node>::const_iterator end, Node node);
@@ -90,6 +98,7 @@ public:
   binaryInsert(std::vector<Node>& v, std::vector<Node>::iterator first,
                std::vector<Node>::iterator end, const Node& item);
 
+  // for deque
   static bool hasRemainder(std::deque<Node> v);
   static int getIndexToInsert(std::deque<Node>::const_iterator begin,
                               std::deque<Node>::const_iterator end, Node node);
@@ -118,13 +127,6 @@ private:
 };
 
 std::ostream& operator<<(std::ostream& os, const PmergeMe& be);
-
-void swap(Node& a, Node& b);
-bool compare(const Node& a, const Node& b);
-
-std::ostream& operator<<(std::ostream& os, const std::vector<int>& v);
-std::ostream& operator<<(std::ostream& os, const std::vector<Node>& v);
-std::ostream& operator<<(std::ostream& os, const std::deque<Node>& v);
 
 // =============== for logging ===============
 struct NullStream {

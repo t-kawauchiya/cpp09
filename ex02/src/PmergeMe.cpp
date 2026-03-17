@@ -6,7 +6,7 @@
 /*   By: takawauc <takawauc@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 19:51:51 by takawauc          #+#    #+#             */
-/*   Updated: 2026/03/17 21:50:07 by takawauc         ###   ########.fr       */
+/*   Updated: 2026/03/17 23:30:01 by takawauc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,16 +15,6 @@
 #include <cctype>
 #include <iostream>
 #include <vector>
-
-void swap(Node& a, Node& b) {
-  Node c(a);
-  a = b;
-  b = c;
-}
-
-bool compare(const Node& a, const Node& b) {
-  return (CountedInt(a.getTopVal()) > CountedInt(b.getTopVal()));
-}
 
 std::ostream& operator<<(std::ostream& os, const std::vector<int>& v) {
   int cnt = 0;
@@ -38,6 +28,16 @@ std::ostream& operator<<(std::ostream& os, const std::vector<int>& v) {
   if (cnt > max)
     os << "... (" << cnt << " items)";
   return os;
+}
+
+void swap(Node& a, Node& b) {
+  Node c(a);
+  a = b;
+  b = c;
+}
+
+bool compare(const Node& a, const Node& b) {
+  return (CountedInt(a.getTopVal()) > CountedInt(b.getTopVal()));
 }
 
 // ===================================================================
@@ -218,7 +218,7 @@ int PmergeMe::getIndexToInsert(std::vector<Node>::const_iterator begin,
   int right = end - begin - 1;
   while (right - left > 1) {
     int mid = left + (right - left) / 2;
-    if (!compare(node, *(begin + mid)))
+    if (!compare(node, *(begin + mid))) // if(node<=*(begin + mid))
       right = mid;
     else
       left = mid;
