@@ -6,7 +6,7 @@
 /*   By: takawauc <takawauc@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 19:51:51 by takawauc          #+#    #+#             */
-/*   Updated: 2026/03/16 21:59:07 by takawauc         ###   ########.fr       */
+/*   Updated: 2026/03/17 23:10:45 by takawauc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,10 +41,6 @@ std::list<std::pair<time_t, double> > BitcoinExchange::getData() const {
   return this->data_;
 }
 
-void BitcoinExchange::addData(std::pair<time_t, double> data) {
-  data_.push_back(data);
-}
-
 double BitcoinExchange::getPrice(time_t date) const {
   if (data_.empty())
     throw std::runtime_error("no price data");
@@ -71,6 +67,7 @@ int BitcoinExchange::importData(std::string filepath) {
   std::string line;
   if (!std::getline(ifs, line))
     return EXIT_FAILURE;
+
   while (std::getline(ifs, line)) {
     std::pair<time_t, double> data;
     if (importLine(line, data))
@@ -88,7 +85,7 @@ static int importLine(std::string line, std::pair<time_t, double>& data) {
     return EXIT_FAILURE;
 
   std::string value;
-  if (!std::getline(iss, value, ','))
+  if (!std::getline(iss, value))
     return EXIT_FAILURE;
 
   if (parseStringTime(date, data.first))

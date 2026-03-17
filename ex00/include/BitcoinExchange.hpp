@@ -30,7 +30,6 @@ public:
 
   std::list<std::pair<time_t, double> > getData() const;
 
-  void addData(std::pair<time_t, double> data);
   double getPrice(time_t date) const;
   void putData(std::pair<time_t, double> data);
 

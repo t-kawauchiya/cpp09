@@ -33,14 +33,15 @@ int main(int argc, char** argv) {
     std::ifstream ifs(argv[1]);
     if (!ifs)
       throw std::runtime_error("could not open file.");
+
     std::string line;
-    std::pair<time_t, double> input;
     if (!std::getline(ifs, line))
       throw std::runtime_error("could not read file.");
 
     while (std::getline(ifs, line)) {
       try {
         // std::cout << "line: " << line << std::endl;
+        std::pair<time_t, double> input;
         parseInput(line, input);
         btc.putData(input);
       } catch (std::runtime_error e) {
