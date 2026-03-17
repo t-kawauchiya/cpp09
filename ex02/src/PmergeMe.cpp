@@ -6,7 +6,7 @@
 /*   By: takawauc <takawauc@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 19:51:51 by takawauc          #+#    #+#             */
-/*   Updated: 2026/03/16 23:59:14 by takawauc         ###   ########.fr       */
+/*   Updated: 2026/03/17 21:50:07 by takawauc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,11 +101,11 @@ std::vector<Node> PmergeMe::solveVector(const std::vector<Node>& v) {
   int size = v.size() - hasRemainder(v);
 
   if (size <= 2) {
-    DOUT << "\n===== size<=2 =====\n";
+    // DOUT << "\n===== size<=2 =====\n";
     std::vector<Node> ret(v);
     if (size == 2 && compare(v[0], v[1]))
       swap(ret[0], ret[1]);
-    DOUT << ret;
+    // DOUT << ret;
     return ret;
   }
   std::vector<Node> folded = foldVector(v);
@@ -118,7 +118,7 @@ std::vector<Node> PmergeMe::foldVector(std::vector<Node> v) {
   int size = v.size() - hasRemainder(v);
   int level = v[0].getLevel() + 1;
 
-  DOUT << "=====fold=====" << std::endl;
+  // DOUT << "=====fold=====" << std::endl;
   for (int i = 0; i + 1 < size; i += 2) {
     if (compare(v[i], v[i + 1]))
       ret.push_back(Node(level, 0, &v[i], &v[i + 1]));
@@ -134,28 +134,28 @@ std::vector<Node> PmergeMe::foldVector(std::vector<Node> v) {
   if (rem.getHigh() || rem.getLow())
     ret.push_back(rem);
 
-  DOUT << "size: " << ret.size() - hasRemainder(ret)
-       << ", hasRemainder: " << hasRemainder(ret) << "\n"
-       << ret;
+  // DOUT << "size: " << ret.size() - hasRemainder(ret)
+  //      << ", hasRemainder: " << hasRemainder(ret) << "\n"
+  // << ret;
   return ret;
 }
 
 std::vector<Node> PmergeMe::expandVector(const std::vector<Node> v) {
-  DOUT << "\n=====expand=====\n";
+  // DOUT << "\n=====expand=====\n";
   std::vector<Node> ret;
   size_t n = 4;
   std::vector<Node>::const_iterator processed = v.begin();
 
   ret.push_back(*v.begin()->getLow());
-  DOUT << "push begin-low: " << v.begin()->getLow()->getTopVal() << "\n"
-       << ret << separator << std::endl;
+  // DOUT << "push begin-low: " << v.begin()->getLow()->getTopVal() << "\n"
+  //      << ret << separator << std::endl;
 
   for (std::vector<Node>::const_iterator it = v.begin();
        it != v.end() - hasRemainder(v); it++) {
     if (it->getHigh())
       ret.push_back(*it->getHigh());
-    DOUT << "push high: " << it->getHigh()->getTopVal() << "\n"
-         << ret << separator << std::endl;
+    // DOUT << "push high: " << it->getHigh()->getTopVal() << "\n"
+    //      << ret << separator << std::endl;
     if (ret.size() >= n) {
       processLowElems(ret, it, processed, n);
       processed = it;
@@ -164,8 +164,9 @@ std::vector<Node> PmergeMe::expandVector(const std::vector<Node> v) {
     if (it == v.end() - hasRemainder(v) - 1) {
       if (hasRemainder(v) && v.back().getHigh()) {
         binaryInsert(ret, ret.begin(), ret.end() + 1, *v.back().getHigh());
-        DOUT << "insert remainder: " << v.back().getHigh()->getTopVal() << "\n"
-             << ret << separator << std::endl;
+        // DOUT << "insert remainder: " << v.back().getHigh()->getTopVal() <<
+        // "\n"
+        //      << ret << separator << std::endl;
       }
       processLowElems(ret, it, processed, n);
       processed = it;
@@ -173,7 +174,7 @@ std::vector<Node> PmergeMe::expandVector(const std::vector<Node> v) {
   }
   if (hasRemainder(v) && v.back().getLow())
     ret.push_back(*v.back().getLow());
-  DOUT << "update remainder: \n" << ret << separator << std::endl;
+  // DOUT << "update remainder: \n" << ret << separator << std::endl;
   return ret;
 }
 
@@ -185,9 +186,9 @@ void PmergeMe::processLowElems(std::vector<Node>& ret,
        it--) {
     PmergeMe::binaryInsert(
         ret, ret.begin(), ret.begin() + std::min(n, ret.size()), *it->getLow());
-    DOUT << "insert low: " << it->getLow()->getTopVal()
-         << " (high: " << it->getHigh()->getTopVal() << ")\n"
-         << ret << separator << std::endl;
+    // DOUT << "insert low: " << it->getLow()->getTopVal()
+    //      << " (high: " << it->getHigh()->getTopVal() << ")\n"
+    //      << ret << separator << std::endl;
   }
 }
 
@@ -433,7 +434,7 @@ void Node::setLow(Node* node) {
 
 //     printer
 std::ostream& operator<<(std::ostream& os, const Node& node) {
-  int indent = 2 * (4 - node.getLevel());
+  int indent = std::max(0, 2 * (4 - node.getLevel()));
   if (node.getLevel() == 0) {
     os << node.getVal() << " ";
     return os;
