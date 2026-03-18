@@ -6,7 +6,7 @@
 /*   By: takawauc <takawauc@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 16:56:41 by takawauc          #+#    #+#             */
-/*   Updated: 2026/03/16 20:44:20 by takawauc         ###   ########.fr       */
+/*   Updated: 2026/03/18 18:03:02 by takawauc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,41 +14,37 @@
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
-#include <limits>
 #include <sstream>
 
 void parseInput(const std::string& line, std::pair<time_t, double>& data);
 
 int main(int argc, char** argv) {
-  if (argc == 1) {
-    std::cerr << "Error: could not open file." << std::endl;
-    return EXIT_FAILURE;
-  }
   if (argc != 2) {
-    std::cerr << "Error: can not accept multiple files." << std::endl;
+    std::cerr << "Usage: ./btc <filepath>" << std::endl;
     return EXIT_FAILURE;
   }
   try {
     BitcoinExchange btc(DATA_FILE_PATH);
     std::ifstream ifs(argv[1]);
     if (!ifs)
-      throw std::runtime_error("could not open file.");
+      throw std::runtime_error("failed to open input file.");
 
     std::string line;
-    if (!std::getline(ifs, line))
-      throw std::runtime_error("could not read file.");
+    const std::string header("date | value");
 
     while (std::getline(ifs, line)) {
       try {
         // std::cout << "line: " << line << std::endl;
+        if (line.empty() || line.compare(0, header.length(), header) == 0)
+          continue;
         std::pair<time_t, double> input;
         parseInput(line, input);
         btc.putData(input);
-      } catch (std::runtime_error e) {
+      } catch (const std::exception& e) {
         std::cerr << "Error: " << e.what() << std::endl;
       }
     }
-  } catch (std::runtime_error e) {
+  } catch (const std::exception& e) {
     std::cerr << "Error: " << e.what() << std::endl;
   }
 }
@@ -58,23 +54,23 @@ void parseInput(const std::string& line, std::pair<time_t, double>& data) {
 
   std::string date;
   if (!std::getline(iss, date, '|'))
-    throw std::runtime_error("could not read file.");
+    throw std::runtime_error("failed to read file.");
+
+  if (parseStringTime(date, data.first))
+    throw std::invalid_argument("bad input => " + date);
 
   std::string value;
   if (!std::getline(iss, value))
-    throw std::runtime_error("could not read file.");
-
-  if (parseStringTime(date, data.first))
-    throw std::runtime_error("bad input => " + date);
+    throw std::invalid_argument("bad input => " + line);
 
   std::stringstream ss(value);
   ss >> data.second;
   ss >> std::ws;
   if (!ss.eof())
-    throw std::runtime_error("could not read file.3");
+    throw std::invalid_argument("bad input => " + line);
 
   if (data.second < 0)
-    throw std::runtime_error("not a positive number.");
-  if (data.second > static_cast<double>(std::numeric_limits<int>::max()))
-    throw std::runtime_error("too large number.");
+    throw std::invalid_argument("not a positive number.");
+  if (data.second > static_cast<double>(1000))
+    throw std::invalid_argument("too large number.");
 }

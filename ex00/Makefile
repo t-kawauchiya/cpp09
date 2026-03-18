@@ -14,6 +14,7 @@ OBJ = $(addprefix $(OBJ_DIR)/, $(SRC_FILES:.cpp=.o))
 DEPS = $(OBJ:.o=.d)
 
 INPUT_TXT = input.txt
+ERR_INPUT_TXT = error_input.txt
 
 all: $(NAME)
 
@@ -46,8 +47,14 @@ val: re
 	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(NAME)
 
 test: debug
+	@printf "\n"
 	ASAN_OPTIONS=detect_leaks=1 \
 	LSAN_OPTIONS=use_registers=0:report_objects=1 \
 	./$(NAME) $(INPUT_TXT)
+
+	@printf "\n"
+	ASAN_OPTIONS=detect_leaks=1 \
+	LSAN_OPTIONS=use_registers=0:report_objects=1 \
+	./$(NAME) $(ERR_INPUT_TXT)
 
 .PHONY: all debug clean fclean re val test

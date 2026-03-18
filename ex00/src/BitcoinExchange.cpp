@@ -6,7 +6,7 @@
 /*   By: takawauc <takawauc@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 19:51:51 by takawauc          #+#    #+#             */
-/*   Updated: 2026/03/17 23:10:45 by takawauc         ###   ########.fr       */
+/*   Updated: 2026/03/18 17:57:10 by takawauc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,11 +43,11 @@ std::list<std::pair<time_t, double> > BitcoinExchange::getData() const {
 
 double BitcoinExchange::getPrice(time_t date) const {
   if (data_.empty())
-    throw std::runtime_error("no price data");
+    throw std::runtime_error("no price data stored");
 
   std::list<std::pair<time_t, double> >::const_iterator it = data_.begin();
   if (date < it->first)
-    throw std::runtime_error("date is earlier than first available entry");
+    throw std::invalid_argument("date is earlier than first available entry");
 
   while (it != data_.end()) {
     if (it->first > date)
@@ -57,47 +57,44 @@ double BitcoinExchange::getPrice(time_t date) const {
   return (--it)->second;
 }
 
-static int importLine(std::string line, std::pair<time_t, double>& data);
+static void importLine(std::string line, std::pair<time_t, double>& data);
 
-int BitcoinExchange::importData(std::string filepath) {
+void BitcoinExchange::importData(std::string filepath) {
   std::ifstream ifs(filepath.c_str());
   if (!ifs)
-    return EXIT_FAILURE;
+    throw std::runtime_error("fialed to open database file: " + filepath);
 
+  const std::string header("date,exchange_rate");
   std::string line;
-  if (!std::getline(ifs, line))
-    return EXIT_FAILURE;
 
   while (std::getline(ifs, line)) {
+    if (line.compare(0, header.length(), header) == 0 || line.empty())
+      continue;
     std::pair<time_t, double> data;
-    if (importLine(line, data))
-      return EXIT_FAILURE;
+    importLine(line, data);
     data_.push_back(data);
   }
-  return EXIT_SUCCESS;
 }
 
-static int importLine(std::string line, std::pair<time_t, double>& data) {
+static void importLine(std::string line, std::pair<time_t, double>& data) {
   std::istringstream iss(line);
 
   std::string date;
   if (!std::getline(iss, date, ','))
-    return EXIT_FAILURE;
+    throw std::invalid_argument("failed to init database: " + date);
 
   std::string value;
   if (!std::getline(iss, value))
-    return EXIT_FAILURE;
+    throw std::invalid_argument("failed to init database: " + value);
 
   if (parseStringTime(date, data.first))
-    return EXIT_FAILURE;
+    throw std::invalid_argument("failed to init database: " + date);
 
   std::stringstream ss(value);
   ss >> data.second;
   ss >> std::ws;
   if (!ss.eof())
-    return EXIT_FAILURE;
-
-  return EXIT_SUCCESS;
+    throw std::invalid_argument("failed to init database: " + line);
 }
 
 int parseStringTime(std::string str, time_t& t) {
@@ -121,8 +118,11 @@ int parseStringTime(std::string str, time_t& t) {
 
 static std::string parseTmToString(time_t t);
 
-void BitcoinExchange::putData(std::pair<time_t, double> data) {
+void BitcoinExchange::putData(std::pair<time_t, double> data) const {
   std::string date = parseTmToString(data.first);
+  if (date.empty())
+    throw std::runtime_error("failed to perse time");
+
   std::cout << date << " => " << data.second << " = ";
   std::cout << getPrice(data.first) * data.second << "\n";
 }
