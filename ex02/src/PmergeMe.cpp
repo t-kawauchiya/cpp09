@@ -6,7 +6,7 @@
 /*   By: takawauc <takawauc@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 19:51:51 by takawauc          #+#    #+#             */
-/*   Updated: 2026/03/17 23:30:01 by takawauc         ###   ########.fr       */
+/*   Updated: 2026/03/18 18:36:47 by takawauc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,7 +136,7 @@ std::vector<Node> PmergeMe::foldVector(std::vector<Node> v) {
 
   // DOUT << "size: " << ret.size() - hasRemainder(ret)
   //      << ", hasRemainder: " << hasRemainder(ret) << "\n"
-  // << ret;
+  //      << ret;
   return ret;
 }
 
