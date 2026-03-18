@@ -6,7 +6,7 @@
 /*   By: takawauc <takawauc@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 19:51:51 by takawauc          #+#    #+#             */
-/*   Updated: 2026/03/16 22:34:39 by takawauc         ###   ########.fr       */
+/*   Updated: 2026/03/18 18:09:23 by takawauc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,8 @@ void RPN::pushNum(int num) {
 void RPN::add() {
   int a, b;
 
+  if (stack_.size() < 2)
+    throw std::invalid_argument("not sufficient items to excecute addtion");
   a = stack_.top();
   stack_.pop();
   b = stack_.top();
@@ -92,6 +94,8 @@ void RPN::add() {
 void RPN::sub() {
   int a, b;
 
+  if (stack_.size() < 2)
+    throw std::invalid_argument("not sufficient items to excecute subtruction");
   a = stack_.top();
   stack_.pop();
   b = stack_.top();
@@ -102,6 +106,9 @@ void RPN::sub() {
 void RPN::mul() {
   int a, b;
 
+  if (stack_.size() < 2)
+    throw std::invalid_argument(
+        "not sufficient items to excecute multiplication");
   a = stack_.top();
   stack_.pop();
   b = stack_.top();
@@ -112,6 +119,8 @@ void RPN::mul() {
 void RPN::div() {
   int a, b;
 
+  if (stack_.size() < 2)
+    throw std::invalid_argument("not sufficient items to excecute division");
   a = stack_.top();
   stack_.pop();
   b = stack_.top();

@@ -6,7 +6,7 @@
 /*   By: takawauc <takawauc@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 16:56:41 by takawauc          #+#    #+#             */
-/*   Updated: 2026/03/17 23:15:04 by takawauc         ###   ########.fr       */
+/*   Updated: 2026/03/18 18:04:30 by takawauc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ int main(int argc, char** argv) {
   }
   try {
     std::cout << solve(argv[1]) << std::endl;
-  } catch (std::runtime_error e) {
+  } catch (const std::exception& e) {
     std::cerr << "Error: " << e.what() << std::endl;
   }
 }
