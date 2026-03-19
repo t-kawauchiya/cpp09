@@ -6,7 +6,7 @@
 /*   By: takawauc <takawauc@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 19:51:51 by takawauc          #+#    #+#             */
-/*   Updated: 2026/03/18 18:36:47 by takawauc         ###   ########.fr       */
+/*   Updated: 2026/03/19 13:11:27 by takawauc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,12 +84,14 @@ std::vector<int> PmergeMe::getResultDeque() const {
 void PmergeMe::solveVector() {
   CountedInt::resetCnt();
   std::vector<Node> input_vector;
+  input_vector.reserve(input_.size());
   for (std::vector<int>::const_iterator it = input_.begin(); it != input_.end();
        it++)
     input_vector.push_back(Node(*it));
 
   std::vector<Node> result_vector = solveVector(input_vector);
 
+  result_vector.reserve(input_.size());
   for (std::vector<Node>::const_iterator it = result_vector.begin();
        it != result_vector.end(); it++)
     resultVector_.push_back(it->getVal());
@@ -97,7 +99,7 @@ void PmergeMe::solveVector() {
   DOUT << "[debug] compare count: " << CountedInt::getCnt() << std::endl;
 }
 
-std::vector<Node> PmergeMe::solveVector(const std::vector<Node>& v) {
+std::vector<Node> PmergeMe::solveVector(std::vector<Node>& v) {
   int size = v.size() - hasRemainder(v);
 
   if (size <= 2) {
@@ -113,8 +115,9 @@ std::vector<Node> PmergeMe::solveVector(const std::vector<Node>& v) {
   return expandVector(solved);
 }
 
-std::vector<Node> PmergeMe::foldVector(std::vector<Node> v) {
+std::vector<Node> PmergeMe::foldVector(std::vector<Node>& v) {
   std::vector<Node> ret;
+  ret.reserve(v.size() / 2 + 1);
   int size = v.size() - hasRemainder(v);
   int level = v[0].getLevel() + 1;
 
@@ -140,9 +143,10 @@ std::vector<Node> PmergeMe::foldVector(std::vector<Node> v) {
   return ret;
 }
 
-std::vector<Node> PmergeMe::expandVector(const std::vector<Node> v) {
+std::vector<Node> PmergeMe::expandVector(std::vector<Node>& v) {
   // DOUT << "\n=====expand=====\n";
   std::vector<Node> ret;
+  ret.reserve(v.size() * 2);
   size_t n = 4;
   std::vector<Node>::const_iterator processed = v.begin();
 
@@ -192,12 +196,12 @@ void PmergeMe::processLowElems(std::vector<Node>& ret,
   }
 }
 
-bool PmergeMe::hasRemainder(std::vector<Node> v) {
-  Node* node = &v.back();
+bool PmergeMe::hasRemainder(const std::vector<Node>& v) {
+  const Node* node = &v.back();
   int lvl = node->getLevel();
 
   while (lvl--) {
-    if (!node->getLow() || !node->getLow())
+    if (!node->getHigh() || !node->getLow())
       return true;
     node = node->getLow();
   }
@@ -213,7 +217,7 @@ PmergeMe::binaryInsert(std::vector<Node>& v, std::vector<Node>::iterator begin,
 
 int PmergeMe::getIndexToInsert(std::vector<Node>::const_iterator begin,
                                std::vector<Node>::const_iterator end,
-                               Node node) {
+                               const Node& node) {
   int left = -1;
   int right = end - begin - 1;
   while (right - left > 1) {
@@ -243,7 +247,7 @@ void PmergeMe::solveDeque() {
   DOUT << "[debug] compare count: " << CountedInt::getCnt() << std::endl;
 }
 
-std::deque<Node> PmergeMe::solveDeque(const std::deque<Node>& v) {
+std::deque<Node> PmergeMe::solveDeque(std::deque<Node>& v) {
   int size = v.size() - hasRemainder(v);
 
   if (size <= 2) {
@@ -257,7 +261,7 @@ std::deque<Node> PmergeMe::solveDeque(const std::deque<Node>& v) {
   return expandDeque(solved);
 }
 
-std::deque<Node> PmergeMe::foldDeque(std::deque<Node> v) {
+std::deque<Node> PmergeMe::foldDeque(std::deque<Node>& v) {
   std::deque<Node> ret;
   int size = v.size() - hasRemainder(v);
   int level = v[0].getLevel() + 1;
@@ -280,7 +284,7 @@ std::deque<Node> PmergeMe::foldDeque(std::deque<Node> v) {
   return ret;
 }
 
-std::deque<Node> PmergeMe::expandDeque(const std::deque<Node> v) {
+std::deque<Node> PmergeMe::expandDeque(std::deque<Node>& v) {
   std::deque<Node> ret;
   size_t n = 4;
   std::deque<Node>::const_iterator processed = v.begin();
@@ -317,12 +321,12 @@ void PmergeMe::processLowElems(std::deque<Node>& ret,
         ret, ret.begin(), ret.begin() + std::min(n, ret.size()), *it->getLow());
 }
 
-bool PmergeMe::hasRemainder(std::deque<Node> v) {
-  Node* node = &v.back();
+bool PmergeMe::hasRemainder(const std::deque<Node>& v) {
+  const Node* node = &v.back();
   int lvl = node->getLevel();
 
   while (lvl--) {
-    if (!node->getLow() || !node->getLow())
+    if (!node->getHigh() || !node->getLow())
       return true;
     node = node->getLow();
   }

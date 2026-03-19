@@ -6,7 +6,7 @@
 /*   By: takawauc <takawauc@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 16:56:41 by takawauc          #+#    #+#             */
-/*   Updated: 2026/03/18 18:36:00 by takawauc         ###   ########.fr       */
+/*   Updated: 2026/03/19 12:09:18 by takawauc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ int main(int argc, char** argv) {
 }
 
 double getDuration(clock_t start, clock_t end) {
-  return static_cast<double>(end - start) / CLOCKS_PER_SEC;
+  return static_cast<double>(end - start) / CLOCKS_PER_SEC * 1000 * 1000;
 }
 
 std::vector<int> parseStrArrToVector(char** sarr, int size) {

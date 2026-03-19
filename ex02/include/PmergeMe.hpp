@@ -6,7 +6,7 @@
 /*   By: takawauc <takawauc@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 16:57:27 by takawauc          #+#    #+#             */
-/*   Updated: 2026/03/17 23:19:50 by takawauc         ###   ########.fr       */
+/*   Updated: 2026/03/19 12:28:46 by takawauc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,15 +91,16 @@ public:
   PmergeMe& operator=(const PmergeMe& other);
 
   // for vector
-  static bool hasRemainder(std::vector<Node> v);
+  static bool hasRemainder(const std::vector<Node>& v);
   static int getIndexToInsert(std::vector<Node>::const_iterator begin,
-                              std::vector<Node>::const_iterator end, Node node);
+                              std::vector<Node>::const_iterator end,
+                              const Node& node);
   static std::vector<Node>::iterator
   binaryInsert(std::vector<Node>& v, std::vector<Node>::iterator first,
                std::vector<Node>::iterator end, const Node& item);
 
   // for deque
-  static bool hasRemainder(std::deque<Node> v);
+  static bool hasRemainder(const std::deque<Node>& v);
   static int getIndexToInsert(std::deque<Node>::const_iterator begin,
                               std::deque<Node>::const_iterator end, Node node);
   static std::deque<Node>::iterator
@@ -107,16 +108,16 @@ public:
                std::deque<Node>::iterator end, const Node& item);
 
 private:
-  std::vector<Node> solveVector(const std::vector<Node>& v);
-  static std::vector<Node> foldVector(const std::vector<Node> v);
-  static std::vector<Node> expandVector(const std::vector<Node> v);
+  std::vector<Node> solveVector(std::vector<Node>& v);
+  static std::vector<Node> foldVector(std::vector<Node>& v);
+  static std::vector<Node> expandVector(std::vector<Node>& v);
   static void processLowElems(std::vector<Node>& ret,
                               std::vector<Node>::const_iterator begin,
                               std::vector<Node>::const_iterator end, size_t n);
 
-  std::deque<Node> solveDeque(const std::deque<Node>& v);
-  static std::deque<Node> foldDeque(const std::deque<Node> v);
-  static std::deque<Node> expandDeque(const std::deque<Node> v);
+  std::deque<Node> solveDeque(std::deque<Node>& v);
+  static std::deque<Node> foldDeque(std::deque<Node>& v);
+  static std::deque<Node> expandDeque(std::deque<Node>& v);
   static void processLowElems(std::deque<Node>& ret,
                               std::deque<Node>::const_iterator begin,
                               std::deque<Node>::const_iterator end, size_t n);
