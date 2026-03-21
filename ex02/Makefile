@@ -27,6 +27,10 @@ debug: CXXFLAGS += $(SANFLAGS) -DDEBUG
 debug: LDFLAGS += $(SANFLAGS) 
 debug: fclean all
 
+trace: CXXFLAGS += $(SANFLAGS) -DDEBUG -DTRACE
+trace: LDFLAGS += $(SANFLAGS) 
+trace: fclean all
+
 clean:
 	rm -rf $(OBJ_DIR)
 

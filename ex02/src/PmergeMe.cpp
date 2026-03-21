@@ -6,7 +6,7 @@
 /*   By: takawauc <takawauc@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/25 19:51:51 by takawauc          #+#    #+#             */
-/*   Updated: 2026/03/19 13:11:27 by takawauc         ###   ########.fr       */
+/*   Updated: 2026/03/21 20:01:40 by takawauc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,11 +103,11 @@ std::vector<Node> PmergeMe::solveVector(std::vector<Node>& v) {
   int size = v.size() - hasRemainder(v);
 
   if (size <= 2) {
-    // DOUT << "\n===== size<=2 =====\n";
+    TOUT << "\n===== size<=2 =====\n";
     std::vector<Node> ret(v);
     if (size == 2 && compare(v[0], v[1]))
       swap(ret[0], ret[1]);
-    // DOUT << ret;
+    TOUT << ret;
     return ret;
   }
   std::vector<Node> folded = foldVector(v);
@@ -121,7 +121,7 @@ std::vector<Node> PmergeMe::foldVector(std::vector<Node>& v) {
   int size = v.size() - hasRemainder(v);
   int level = v[0].getLevel() + 1;
 
-  // DOUT << "=====fold=====" << std::endl;
+  TOUT << "=====fold=====" << std::endl;
   for (int i = 0; i + 1 < size; i += 2) {
     if (compare(v[i], v[i + 1]))
       ret.push_back(Node(level, 0, &v[i], &v[i + 1]));
@@ -137,29 +137,29 @@ std::vector<Node> PmergeMe::foldVector(std::vector<Node>& v) {
   if (rem.getHigh() || rem.getLow())
     ret.push_back(rem);
 
-  // DOUT << "size: " << ret.size() - hasRemainder(ret)
-  //      << ", hasRemainder: " << hasRemainder(ret) << "\n"
-  //      << ret;
+  TOUT << "size: " << ret.size() - hasRemainder(ret)
+       << ", hasRemainder: " << hasRemainder(ret) << "\n"
+       << ret;
   return ret;
 }
 
 std::vector<Node> PmergeMe::expandVector(std::vector<Node>& v) {
-  // DOUT << "\n=====expand=====\n";
+  TOUT << "\n=====expand=====\n";
   std::vector<Node> ret;
   ret.reserve(v.size() * 2);
   size_t n = 4;
   std::vector<Node>::const_iterator processed = v.begin();
 
   ret.push_back(*v.begin()->getLow());
-  // DOUT << "push begin-low: " << v.begin()->getLow()->getTopVal() << "\n"
-  //      << ret << separator << std::endl;
+  TOUT << "push begin-low: " << v.begin()->getLow()->getTopVal() << "\n"
+       << ret << separator << std::endl;
 
   for (std::vector<Node>::const_iterator it = v.begin();
        it != v.end() - hasRemainder(v); it++) {
     if (it->getHigh())
       ret.push_back(*it->getHigh());
-    // DOUT << "push high: " << it->getHigh()->getTopVal() << "\n"
-    //      << ret << separator << std::endl;
+    TOUT << "push high: " << it->getHigh()->getTopVal() << "\n"
+         << ret << separator << std::endl;
     if (ret.size() >= n) {
       processLowElems(ret, it, processed, n);
       processed = it;
@@ -168,9 +168,8 @@ std::vector<Node> PmergeMe::expandVector(std::vector<Node>& v) {
     if (it == v.end() - hasRemainder(v) - 1) {
       if (hasRemainder(v) && v.back().getHigh()) {
         binaryInsert(ret, ret.begin(), ret.end() + 1, *v.back().getHigh());
-        // DOUT << "insert remainder: " << v.back().getHigh()->getTopVal() <<
-        // "\n"
-        //      << ret << separator << std::endl;
+        TOUT << "insert remainder: " << v.back().getHigh()->getTopVal() << "\n"
+             << ret << separator << std::endl;
       }
       processLowElems(ret, it, processed, n);
       processed = it;
@@ -178,7 +177,7 @@ std::vector<Node> PmergeMe::expandVector(std::vector<Node>& v) {
   }
   if (hasRemainder(v) && v.back().getLow())
     ret.push_back(*v.back().getLow());
-  // DOUT << "update remainder: \n" << ret << separator << std::endl;
+  TOUT << "update remainder: \n" << ret << separator << std::endl;
   return ret;
 }
 
@@ -190,9 +189,9 @@ void PmergeMe::processLowElems(std::vector<Node>& ret,
        it--) {
     PmergeMe::binaryInsert(
         ret, ret.begin(), ret.begin() + std::min(n, ret.size()), *it->getLow());
-    // DOUT << "insert low: " << it->getLow()->getTopVal()
-    //      << " (high: " << it->getHigh()->getTopVal() << ")\n"
-    //      << ret << separator << std::endl;
+    TOUT << "insert low: " << it->getLow()->getTopVal()
+         << " (high: " << it->getHigh()->getTopVal() << ")\n"
+         << ret << separator << std::endl;
   }
 }
 
@@ -526,7 +525,7 @@ void CountedInt::resetCnt() {
 
 bool CountedInt::operator>(const CountedInt& rhs) const {
   ++cnt_;
-  // DOUT << "[debug] cnt: " << cnt_ << ", compare: " << v_ << " > " << rhs.v_
-  //      << std::endl;
+  TOUT << "[debug] cnt: " << cnt_ << ", compare: " << v_ << " > " << rhs.v_
+       << std::endl;
   return v_ > rhs.v_;
 }

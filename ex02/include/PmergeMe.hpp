@@ -6,7 +6,7 @@
 /*   By: takawauc <takawauc@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 16:57:27 by takawauc          #+#    #+#             */
-/*   Updated: 2026/03/19 12:28:46 by takawauc         ###   ########.fr       */
+/*   Updated: 2026/03/21 20:00:20 by takawauc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,11 +139,18 @@ struct NullStream {
   }
 };
 
+static NullStream null_stream;
+
 #ifdef DEBUG
 #define DOUT std::cerr
 #else
 #define DOUT null_stream
-static NullStream null_stream;
+#endif
+
+#ifdef TRACE
+#define TOUT std::cerr
+#else
+#define TOUT null_stream
 #endif
 
 const std::string separator = "\n--------------";
