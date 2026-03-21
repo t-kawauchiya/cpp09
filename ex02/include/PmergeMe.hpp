@@ -6,7 +6,7 @@
 /*   By: takawauc <takawauc@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 16:57:27 by takawauc          #+#    #+#             */
-/*   Updated: 2026/03/19 12:28:46 by takawauc         ###   ########.fr       */
+/*   Updated: 2026/03/21 20:34:20 by takawauc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,39 +19,55 @@
 
 std::ostream& operator<<(std::ostream& os, const std::vector<int>& v);
 
-class Node {
-public:
-  Node(const Node& other);
-  Node(int val);
-  Node(int lvl, int val, Node* high_p, Node* low_p);
+struct Node {
+  int level;
+  int val;
+  int highIdx;
+  int lowIdx;
 
-  ~Node();
-
-  Node& operator=(const Node& other);
-
-  int getLevel() const;
-  int getVal() const;
-  Node* getHigh() const;
-  Node* getLow() const;
-  void setHigh(Node*);
-  void setLow(Node*);
-
-  int getTopVal() const;
-
-private:
   Node();
-  int level_;
-  int val_;
-  Node* high_;
-  Node* low_;
-};
+  Node(int val);
+  Node(int lvl, int val, int highIdx, int lowIdx);
 
-void swap(Node& a, Node& b);
-bool compare(const Node& a, const Node& b);
+  bool hasHigh() const;
+  bool hasLow() const;
+};
 
 std::ostream& operator<<(std::ostream& os, const Node& node);
 std::ostream& operator<<(std::ostream& os, const std::vector<Node>& v);
 std::ostream& operator<<(std::ostream& os, const std::deque<Node>& v);
+
+template <class OS, class CONTAINER>
+void putNode(OS& os, const CONTAINER& pool, const Node& node, int indent) {
+  if (node.level == 0) {
+    os << node.val << " ";
+    return;
+  }
+  os << std::string(indent, ' ');
+  os << "L" << node.level << "{ " << (node.level > 1 ? "\n" : "");
+  if (node.hasHigh())
+    putNode(os, pool, pool[node.highIdx], indent + 2);
+  else
+    os << std::string(indent + 2, ' ') << "NULL"
+       << (node.level > 1 ? "\n" : "");
+  if (node.hasLow())
+    putNode(os, pool, pool[node.lowIdx], indent + 2);
+  else
+    os << std::string(indent + 2, ' ') << "NULL"
+       << (node.level > 1 ? "\n" : "");
+  if (node.level > 1)
+    os << std::string(indent, ' ');
+  os << "}\n";
+}
+
+template <class OS>
+void putResult(OS& os, const std::vector<Node>& pool,
+               const std::vector<int>& result) {
+  for (std::vector<int>::const_iterator it = result.begin(); it != result.end();
+       it++)
+    putNode(os, pool, pool[*it], 0);
+  os << std::endl;
+}
 
 class CountedInt {
 public:
@@ -75,56 +91,60 @@ private:
 
 class PmergeMe {
 public:
-  PmergeMe();
   PmergeMe(std::vector<int> input);
-  PmergeMe(const PmergeMe& other);
 
   ~PmergeMe();
 
-  std::vector<int> getInput() const;
-  std::vector<int> getResultVector() const;
-  std::vector<int> getResultDeque() const;
+  const std::vector<int>& getInput() const;
 
-  void solveVector();
-  void solveDeque();
-
-  PmergeMe& operator=(const PmergeMe& other);
+  bool compare(int a, int b);
 
   // for vector
-  static bool hasRemainder(const std::vector<Node>& v);
-  static int getIndexToInsert(std::vector<Node>::const_iterator begin,
-                              std::vector<Node>::const_iterator end,
-                              const Node& node);
-  static std::vector<Node>::iterator
-  binaryInsert(std::vector<Node>& v, std::vector<Node>::iterator first,
-               std::vector<Node>::iterator end, const Node& item);
+  const std::vector<int>& getResult_v() const;
+  void solve_v();
+  bool hasRemainder(const std::vector<int>& v);
+  int getIndexToInsert(std::vector<int>::const_iterator begin,
+                       std::vector<int>::const_iterator end, int idx);
+  std::vector<int>::iterator binaryInsert(std::vector<int>& v,
+                                          std::vector<int>::iterator first,
+                                          std::vector<int>::iterator end,
+                                          int idx);
 
   // for deque
-  static bool hasRemainder(const std::deque<Node>& v);
-  static int getIndexToInsert(std::deque<Node>::const_iterator begin,
-                              std::deque<Node>::const_iterator end, Node node);
-  static std::deque<Node>::iterator
-  binaryInsert(std::deque<Node>& v, std::deque<Node>::iterator first,
-               std::deque<Node>::iterator end, const Node& item);
+  const std::vector<int>& getResult_d() const;
+  void solve_d();
+  bool hasRemainder(const std::deque<int>& v);
+  int getIndexToInsert(std::deque<int>::const_iterator begin,
+                       std::deque<int>::const_iterator end, int idx);
+  std::deque<int>::iterator binaryInsert(std::deque<int>& v,
+                                         std::deque<int>::iterator first,
+                                         std::deque<int>::iterator end,
+                                         int idx);
 
 private:
-  std::vector<Node> solveVector(std::vector<Node>& v);
-  static std::vector<Node> foldVector(std::vector<Node>& v);
-  static std::vector<Node> expandVector(std::vector<Node>& v);
-  static void processLowElems(std::vector<Node>& ret,
-                              std::vector<Node>::const_iterator begin,
-                              std::vector<Node>::const_iterator end, size_t n);
-
-  std::deque<Node> solveDeque(std::deque<Node>& v);
-  static std::deque<Node> foldDeque(std::deque<Node>& v);
-  static std::deque<Node> expandDeque(std::deque<Node>& v);
-  static void processLowElems(std::deque<Node>& ret,
-                              std::deque<Node>::const_iterator begin,
-                              std::deque<Node>::const_iterator end, size_t n);
+  PmergeMe();
+  PmergeMe(const PmergeMe& other);
+  PmergeMe& operator=(const PmergeMe& other);
 
   std::vector<int> input_;
-  std::vector<int> resultVector_;
-  std::vector<int> resultDeque_;
+  // for vector
+  std::vector<int> solve_v(std::vector<int>& v);
+  std::vector<int> fold_v(std::vector<int>& v);
+  std::vector<int> expand_v(std::vector<int>& v);
+  void processLowElems(std::vector<int>& ret,
+                       std::vector<int>::const_iterator begin,
+                       std::vector<int>::const_iterator end, size_t n);
+  std::vector<Node> pool_v_;
+  std::vector<int> result_v_;
+  // for deque
+  std::deque<int> solve_d(std::deque<int>& v);
+  std::deque<int> fold_d(std::deque<int>& v);
+  std::deque<int> expand_d(std::deque<int>& v);
+  void processLowElems(std::deque<int>& ret,
+                       std::deque<int>::const_iterator begin,
+                       std::deque<int>::const_iterator end, size_t n);
+  std::vector<Node> pool_d_;
+  std::vector<int> result_d_;
 };
 
 std::ostream& operator<<(std::ostream& os, const PmergeMe& be);
@@ -139,11 +159,18 @@ struct NullStream {
   }
 };
 
+static NullStream null_stream;
+
 #ifdef DEBUG
 #define DOUT std::cerr
 #else
 #define DOUT null_stream
-static NullStream null_stream;
+#endif
+
+#ifdef TRACE
+#define TOUT std::cerr
+#else
+#define TOUT null_stream
 #endif
 
 const std::string separator = "\n--------------";

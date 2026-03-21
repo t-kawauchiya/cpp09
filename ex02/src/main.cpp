@@ -6,7 +6,7 @@
 /*   By: takawauc <takawauc@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 16:56:41 by takawauc          #+#    #+#             */
-/*   Updated: 2026/03/19 12:09:18 by takawauc         ###   ########.fr       */
+/*   Updated: 2026/03/21 20:46:59 by takawauc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,16 +31,16 @@ int main(int argc, char** argv) {
     PmergeMe pmm(input);
 
     clock_t start_v = clock();
-    pmm.solveVector();
+    pmm.solve_v();
     clock_t end_v = clock();
 
     clock_t start_d = clock();
-    pmm.solveDeque();
+    pmm.solve_d();
     clock_t end_d = clock();
 
     std::cout << "Before: " << input << std::endl;
-    std::cout << "After:  " << pmm.getResultVector() << std::endl;
-    DOUT << "After:  " << pmm.getResultDeque() << std::endl;
+    std::cout << "After:  " << pmm.getResult_v() << std::endl;
+    std::cout << "After:  " << pmm.getResult_d() << std::endl;
     std::cout << "Time to process a range of " << input.size()
               << " elements with std::vector : " << std::fixed
               << std::setprecision(5) << getDuration(start_v, end_v) << "us\n";
