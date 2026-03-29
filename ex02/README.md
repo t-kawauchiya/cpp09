@@ -27,13 +27,22 @@ x1-x2-x3-x4-x5-x6-x7-x8-..-x(n/2+1)
   the item number of each groups are 2\*Ji(Jacobsthal numbers)
 - process unpaired item when other items are all inserted
 
+### why we use Jacbsthal numbers to insert
+
+- to garuntee efficient binary insertion order we should use Jacbsthal numbers to detremine the index insertion starts.
+
+- the binary insertion is most effecient when the list size is $2^k-1$.
+  - the binary search is effecient most when candidate are $2^k$.
+- insertion using Jacobsthal numbers garantees the list size is $2^k - 1$ .
+
 ### comparison between bad order insertion and correct order insertion
 
-- lets compare bad order insertion and correct order insertion.
+- first we compare bad order insertion and correct order insertion.
 
 #### bad order insertion
 
 - (correct insertion order is {y4,y3}, this needs 4 comparisons in worst case)
+- this needs 5 comparisons in worst case.
 
 ```
 x1-x2-x3-x4
@@ -41,8 +50,7 @@ x1-x2-x3-x4
       y3 y4
 ```
 
-- insert y3 before insertion of y4.
-  - insertion of y3 needs 2 comparisons in worst case.
+- insertion of y3 needs 2 comparisons in worst case.
   - the size of the list{x1-x3} is 3, that is $2^k-1$.
 
 ```
@@ -52,11 +60,13 @@ x1-y3-x2-x3-x4
 ```
 
 - insert y4 needs 3 comparisons in worst case to insert the list{x1-x3}.
-- the size of the list{x1-x3} is 4, that is not $2^k-1$.
+  - the size of the list{x1-x3} is 4, that is not $2^k-1$.
 
-so this needs 5 comparisons in worst case.
+- so this needs 5 comparisons in worst case.
 
 #### correct order insertion
+
+this needs only 4 comparisons in worst case!!
 
 ```
 x1-x2-x3-x4
@@ -64,8 +74,7 @@ x1-x2-x3-x4
       y3 y4
 ```
 
-- insert y4.
-  - insertion of y4 needs 2 comparisons in worst case.
+- insertion of y4 needs 2 comparisons in worst case.
   - the size of the list{x1-x3} is 3, that is $2^k-1$.
 
 ```
@@ -75,18 +84,9 @@ x1-y4-x2-x3-x4
 ```
 
 - insert y4 needs 2 comparisons in worst case to insert the list{x1-x2}.
-- the size of the list{x1-x2} is 3, that is $2^k-1$.
+  - the size of the list{x1-x2} is 3, that is $2^k-1$.
 
 so this needs 4 comparisons in worst case!!
-
-that is why we use Jacbsthal numbers that guarantees efficient binary insertion.
-
-### why we use Jacbsthal numbers to insert
-
-- the order is for using efficient binary insertion.
-- the binary insertion is most effecient when the list size is $2^k-1$.
-  - the binary search is effecient most when candidate are $2^k$.
-- insertion using Jacobsthal numbers garantees the list size is $2^k - 1$ .
 
 #### what is Jacobsthal numbers
 
@@ -109,7 +109,7 @@ $$\{J_n\} = \{0,1,1,3,5,11,21,...\}$$
 $$
 \begin{aligned}
 \sum^n J_n &=J_{n-1} + 2 J_{n-2} \\
-&\quad+J_{n-3} + 2 J_{n-4} \\
+&\quad+J_{n-2} + 2 J_{n-3} \\
 &\quad... \\
 &\quad+J_2 + 2 J_1 \\
 &\quad+J_1 \\
