@@ -28,6 +28,7 @@ x1-x2-x3-x4-x5-x6-x7-x8-..-x(n/2+1)
 - process unpaired item when other items are all inserted
 
 ### comparison between bad order insertion and correct order insertion
+
 - lets compare bad order insertion and correct order insertion.
 
 #### bad order insertion
@@ -80,20 +81,21 @@ so this needs 4 comparisons in worst case!!
 
 that is why we use Jacbsthal numbers that guarantees efficient binary insertion.
 
-
-### why we use Jacbsthal numbers to insert 
+### why we use Jacbsthal numbers to insert
 
 - the order is for using efficient binary insertion.
 - the binary insertion is most effecient when the list size is $2^k-1$.
   - the binary search is effecient most when candidate are $2^k$.
 - insertion using Jacobsthal numbers garantees the list size is $2^k - 1$ .
 
-#### what is Jacobsthal numbers 
+#### what is Jacobsthal numbers
 
 the definetion of Jacobsthal number is below
+
 $$
 J_0 = 0,\quad J_1=1
 $$
+
 $$
 J_n = J_{n-1} + 2 J_{n-2} \\
 or \\
@@ -102,12 +104,11 @@ $$
 
 $$\{J_n\} = \{0,1,1,3,5,11,21,...\}$$
 
-#### sumation of Jacobsthal numbers 
+#### sumation of Jacobsthal numbers
 
 $$
 \begin{aligned}
 \sum^n J_n &=J_{n-1} + 2 J_{n-2} \\
-&\quad+J_{n-2} + 2 J_{n-3} \\
 &\quad+J_{n-3} + 2 J_{n-4} \\
 &\quad... \\
 &\quad+J_2 + 2 J_1 \\
@@ -115,26 +116,22 @@ $$
 &\quad+J_1 \\
 &=J_{n-1} + 3\sum^{n-2} J_n + J_1 \\
 &=J_{n-1} + 3\sum^{n} J_n - 3\lparen J_n+ J_{n-1}\rparen + J_1 \\
-\end{aligned}
-$$
-
-$$
--2\sum^n J_n =- 3J_n-2 J_{n-1}+ J_1 \\
-\begin{aligned}
-\sum^n J_n &= \frac{3}{2}J_n + J_{n-1}- \frac{1}{2} \\
-&= \frac{1}{2}J_n + 2^{n-1}- \frac{1}{2} \\
-&= \frac{1}{2}\lparen J_n + 2^{n}- 1 \rparen\\
+&= \frac{1}{2}\{ - J_{n-1} + 3\lparen J_n + J_{n-1}\rparen - J_1\} \\
+&= \frac{1}{2}\{ J_{n} + 2\lparen J_n+ J_{n-1}\rparen - J_1\} \\
+&= \frac{1}{2}\lparen J_n + 2^{n}- 1 \rparen \\
 \end{aligned}
 $$
 
 #### chain size
+
 ```
 x1-x2-x3-x4-x5-x6-x7-x8-..-x(n/2+1)
       |  |  |  |  |  |
       y3 y4 y5 y6 y7 y8 .. y(n/2+1)  (y(n/2+2) : for odd n)
 ```
 
-when we insert y4 the insertion target list must be {x1,x2,x3}. the size is sum of 2 elements at head(x1,x2) and pushed high elements(x3. that is 2*J_1-1). 
+when we insert y4 the insertion target list must be {x1,x2,x3}. the size is sum of 2 elements at head(x1,x2) and pushed high elements(x3. that is 2\*J_1-1).
+
 $$
 size_1 = 2 + 2J_1 -1 = 3 = 2^{2} -1
 $$
@@ -146,7 +143,8 @@ y4-x1-x2-y3-x3-x4-x5-x6-x7-x8-..-x(n/2+1)
 ```
 
 when we insert y6 the insertion target list must be like {y4,x1,x2,y3,x3,x4,x5}.
-the size of list, size2 is sum of size1(3:x1,x2,x3), processde low elements(y3,y4) and pushed high elements(x4, x5. that is 2*J_2) 
+the size of list, size2 is sum of size1(3:x1,x2,x3), processde low elements(y3,y4) and pushed high elements(x4, x5. that is 2\*J_2)
+
 $$
 \begin{aligned}
 size_2 &= size_1 + 2 J_1 +  2J_2  \\
@@ -165,7 +163,6 @@ size_n &= size_{n-1} + 2 J_{n-1} +  2J_n \\
  &= 1 + 2 J_{n-1} + 2^{n}- 2 + 2J_n \\
  &= 2 \lparen J_n + J_{n-1}\rparen + 2^{n} - 1  \\
  &= 2 * 2^{n} - 1  \\
- &= 2^{n+1} -1 
+ &= 2^{n+1} -1
 \end{aligned}
 $$
-
