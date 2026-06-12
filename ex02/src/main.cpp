@@ -6,7 +6,7 @@
 /*   By: takawauc <takawauc@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 16:56:41 by takawauc          #+#    #+#             */
-/*   Updated: 2026/03/21 20:46:59 by takawauc         ###   ########.fr       */
+/*   Updated: 2026/06/12 19:43:31 by takawauc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 
 std::vector<int> parseStrArrToVector(char** sarr, int size);
 
-double getDuration(clock_t start, clock_t end);
+int getDuration(clock_t start, clock_t end);
 
 int main(int argc, char** argv) {
   if (argc == 1) {
@@ -43,17 +43,17 @@ int main(int argc, char** argv) {
     std::cout << "After:  " << pmm.getResult_d() << std::endl;
     std::cout << "Time to process a range of " << input.size()
               << " elements with std::vector : " << std::fixed
-              << std::setprecision(5) << getDuration(start_v, end_v) << "us\n";
+              << getDuration(start_v, end_v) << " us\n";
     std::cout << "Time to process a range of " << input.size()
               << " elements with std::deque  : " << std::fixed
-              << std::setprecision(5) << getDuration(start_d, end_d) << "us\n";
+              << getDuration(start_d, end_d) << " us\n";
   } catch (const std::exception& e) {
     std::cerr << "Error: " << e.what() << std::endl;
   }
 }
 
-double getDuration(clock_t start, clock_t end) {
-  return static_cast<double>(end - start) / CLOCKS_PER_SEC * 1000 * 1000;
+int getDuration(clock_t start, clock_t end) {
+  return (end - start  * 1000 * 1000 / CLOCKS_PER_SEC);
 }
 
 std::vector<int> parseStrArrToVector(char** sarr, int size) {
